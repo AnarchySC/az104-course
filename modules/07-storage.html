@@ -62,6 +62,7 @@
           <button class="tab-btn active" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
+          <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
         <!-- ==================== LAB TAB ==================== -->
@@ -394,6 +395,99 @@ azcopy copy "localfile.txt" "https://&lt;account&gt;.blob.core.windows.net/&lt;c
             </div>
           </div>
 
+        </div>
+
+        <!-- ==================== PROVE IT TAB ==================== -->
+        <div id="tab-prove" class="tab-content">
+          <div class="prove-intro">
+            <h2>Prove You Know It</h2>
+            <p>Not memorization — understanding. Can you apply what you learned to real situations?</p>
+            <div class="score-display">Scenarios: <span class="quiz-score">No questions answered yet</span></div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon scenario">?</span> Quick Scenarios</div>
+
+            <div class="quiz-card" data-qid="q1" data-answer="B">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>Your company stores compliance documents that must not be modified or deleted for 7 years. Which feature do you use?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Blob soft delete with 2555-day retention</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Immutable blob storage with a time-based retention policy</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Azure Backup with a 7-year retention policy</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Immutable storage enforces WORM (Write Once, Read Many) at the storage level. Data physically cannot be modified or deleted until the retention period expires. Soft delete only protects against accidental deletion (data CAN still be deleted permanently). Backup creates copies but doesn't prevent the original from being modified.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Soft delete (A) is a safety net, not a compliance lock — admins can still permanently delete data. Backup (C) protects against data loss but doesn't enforce immutability on the source data.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q2" data-answer="C">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>A developer needs temporary read access to a specific blob for 2 hours. They shouldn't have ongoing access. What do you give them?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>The storage account access key</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>The Reader RBAC role on the storage account</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>A SAS token with read permission and 2-hour expiry</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>A SAS token is purpose-built for this — scoped to a specific resource, specific permissions, with a time limit. Access keys give full control over the entire account (way too much). RBAC Reader gives ongoing access you'd have to remember to revoke.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Access keys (A) are the master keys to the entire storage account — never share them for temporary access. RBAC roles (B) don't expire automatically, creating a security risk if you forget to remove the assignment.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q3" data-answer="A">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You configured a lifecycle management rule to move blobs to Cool tier after 30 days. A blob was uploaded 45 days ago but it's still in Hot tier. Why?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>The blob was modified or accessed within the last 30 days, resetting the timer</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Lifecycle management rules only run monthly</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Cool tier is full</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Lifecycle rules evaluate the "last modified" time. If the blob was accessed and the access tier was reset, or if the blob was modified, the 30-day clock restarts. Note: reads alone don't reset the timer unless you've also changed the blob. Also check that the rule actually targets the correct container/prefix.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Lifecycle rules run daily, not monthly (B is wrong). Azure storage tiers don't have capacity limits (C is wrong) — Cool tier is a pricing tier, not a physical container.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon troubleshoot">!</span> Troubleshooting Spot</div>
+
+            <div class="trouble-card">
+              <span class="trouble-label">Troubleshoot</span>
+              <p class="trouble-situation">You created a storage account, uploaded a blob, and shared the URL with a colleague. They get a 'ResourceNotFound' or 'PublicAccessNotPermitted' error when trying to access it.</p>
+              <p class="trouble-question">What's wrong?</p>
+              <div class="progressive-hints">
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 1</div><div class="prog-hint-content">Check the container's access level — if it's set to "Private", anonymous access is blocked.</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 2</div><div class="prog-hint-content">Check if the storage account has "Allow Blob public access" disabled at the account level (this overrides container settings).</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Answer</div><div class="prog-hint-content answer">By default, new storage accounts disable public blob access at the account level. Even if you set the container to "Blob" or "Container" access level, the account-level setting blocks it. Either enable public access at the account level (not recommended for sensitive data) or generate a SAS token for your colleague.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon architect">&#9670;</span> Architect's Corner</div>
+
+            <div class="architect-card" data-aid="a1" data-best="B">
+              <span class="architect-label">Design Decision</span>
+              <p class="architect-situation">Your app generates 50TB of logs monthly. Logs are queried frequently for the first 7 days, occasionally for 30 days, then only for compliance audits for 1 year. How do you optimize cost?</p>
+              <div class="architect-options">
+                <div class="arch-option" data-value="A"><div class="arch-option-title">Store everything in Hot tier for 1 year, then delete</div><div class="arch-option-desc">Simple, fast access, highest cost</div></div>
+                <div class="arch-option" data-value="B"><div class="arch-option-title">Lifecycle management: Hot for 7 days, Cool for 30 days, Archive after 30 days, delete after 365 days</div><div class="arch-option-desc">Automatic tiering, cost-optimized</div></div>
+                <div class="arch-option" data-value="C"><div class="arch-option-title">Store everything in Archive tier from day one</div><div class="arch-option-desc">Cheapest storage, but retrieval takes hours</div></div>
+              </div>
+              <div class="architect-reveal"><strong>Why this is the best choice</strong>Lifecycle management automates the transition between tiers to match your access pattern. Hot tier for the first 7 days of active querying, Cool for occasional access, Archive for long-term compliance retention. This can reduce storage costs by 80%+ compared to keeping everything in Hot. Option A is simplest but most expensive. Option C is cheapest for storage but Archive retrieval takes up to 15 hours — unusable for the 7-day active querying window.</div>
+            </div>
+          </div>
+
+          <button class="reset-quiz-btn">&#8635; Reset All Answers</button>
         </div>
 
       </div><!-- /tab-container -->

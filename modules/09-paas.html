@@ -62,6 +62,7 @@
           <button class="tab-btn active" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
+          <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
         <!-- ==================== LAB TAB ==================== -->
@@ -522,6 +523,99 @@
             </div>
           </div>
 
+        </div>
+
+        <!-- ==================== PROVE IT TAB ==================== -->
+        <div id="tab-prove" class="tab-content">
+          <div class="prove-intro">
+            <h2>Prove You Know It</h2>
+            <p>Not memorization — understanding. Can you apply what you learned to real situations?</p>
+            <div class="score-display">Scenarios: <span class="quiz-score">No questions answered yet</span></div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon scenario">?</span> Quick Scenarios</div>
+
+            <div class="quiz-card" data-qid="q1" data-answer="B">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You deployed a new version of your web app to the staging slot and it's working perfectly. You swap to production. Five minutes later, users report errors. What's the fastest way to recover?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Redeploy the old version from Git</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Swap the slots again &mdash; the old version is still in the staging slot</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Delete the production slot and recreate it</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Slot swaps are reversible. After swapping, the old production code is now in the staging slot. Simply swap again to roll back instantly. This is the whole point of deployment slots &mdash; zero-downtime deployments with instant rollback.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Redeploying from Git takes minutes; re-swapping takes seconds. Deleting a production slot is destructive and unnecessary when you can simply swap back.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q2" data-answer="C">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You need to run a batch processing job that takes 10 minutes, runs once daily, and processes files from Blob Storage. Which compute option is most cost-effective?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>An App Service Web App on a Basic plan running 24/7</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>A Virtual Machine Scale Set with autoscale</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Azure Container Instances triggered by a Logic App or timer</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>ACI charges only while the container runs &mdash; 10 minutes per day. ACI is purpose-built for short-lived, event-driven workloads.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>App Service charges 24/7 even when idle. VMSS is massive overkill for a single batch job.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q3" data-answer="A">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>Your Container App is running but you need to deploy a new version without downtime. What feature supports this?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Container Apps supports revision-based deployments with traffic splitting</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>You must stop the app, update the image, and restart</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Container Apps doesn't support zero-downtime deployments</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Container Apps creates a new revision for each deployment. You can split traffic (e.g., 90/10) between the old and new revisions, validate, then shift 100% to the new revision. This is similar to App Service deployment slots but built into the container platform.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Container Apps absolutely supports zero-downtime deployments. Stopping the app to update is unnecessary and causes downtime.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon troubleshoot">!</span> Troubleshooting Spot</div>
+
+            <div class="trouble-card">
+              <span class="trouble-label">Troubleshoot</span>
+              <p class="trouble-situation">You deployed a web app from an External Git repo (GitHub). The deployment shows "Success" in the Deployment Center, but browsing to the URL still shows the default Azure placeholder page.</p>
+              <p class="trouble-question">What's wrong?</p>
+              <div class="progressive-hints">
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 1</div><div class="prog-hint-content">Check if the deployment actually pulled the latest code. Click on the deployment entry to see the commit hash and logs.</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 2</div><div class="prog-hint-content">The deployment might have succeeded but the app isn't configured for the correct startup. Check the runtime stack &mdash; is it set to match your app (e.g., PHP, Node, Python)?</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Answer</div><div class="prog-hint-content answer">Most common cause: the repository branch is wrong. Check that the branch name matches exactly (e.g., "main" vs "master"). Also verify the app's startup command is correct for your runtime. For PHP apps, ensure the document root points to the correct folder. Check Application Logs under "Diagnose and solve problems" for specific errors.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon architect">&#9670;</span> Architect's Corner</div>
+
+            <div class="architect-card" data-aid="a1" data-best="B">
+              <span class="architect-label">Design Decision</span>
+              <p class="architect-situation">Your team is migrating 3 microservices to Azure. Service A is a REST API, Service B processes background queues, Service C is a simple static website. Each has different scaling needs. What do you use?</p>
+              <div class="architect-options">
+                <div class="arch-option" data-value="A"><div class="arch-option-title">Option A: Deploy all three as App Service Web Apps in one App Service Plan</div><div class="arch-option-desc">Shared plan, simple management, all scale together</div></div>
+                <div class="arch-option" data-value="B"><div class="arch-option-title">Option B: Service A and B on Container Apps (separate scaling), Service C on Static Web Apps</div><div class="arch-option-desc">Per-service scaling, right tool for each workload</div></div>
+                <div class="arch-option" data-value="C"><div class="arch-option-title">Option C: Deploy all three on AKS (Kubernetes)</div><div class="arch-option-desc">Full control, complex to manage</div></div>
+              </div>
+              <div class="architect-reveal"><strong>Why this is the best choice</strong>Container Apps gives Service A and B independent scaling without Kubernetes complexity &mdash; A scales on HTTP requests, B scales on queue length. Static Web Apps is free/cheap and purpose-built for Service C with built-in CDN. Option A forces all services to scale together (wasteful) and a static site doesn't need a full app runtime. Option C is powerful but overkill unless you have a dedicated platform team to manage Kubernetes.</div>
+            </div>
+          </div>
+
+          <button class="reset-quiz-btn">&#8635; Reset All Answers</button>
         </div>
 
       </div><!-- /tab-container -->

@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initTaskToggles();
   initHints();
   initProgress();
+  initQuizzes();
+  initTroubleshoot();
+  initArchitect();
 });
 
 // Tab switching
@@ -66,15 +69,150 @@ function updateProgressBar(pageId) {
   if (label) label.textContent = `${done}/${checks.length} completed`;
 }
 
-// Global progress for index page
-function getOverallProgress() {
-  let total = 0, done = 0;
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key.startsWith('az104_')) {
-      total++;
-      if (localStorage.getItem(key) === 'true') done++;
+// ============================================
+// Scenario Quizzes
+// ============================================
+function initQuizzes() {
+  const pageId = document.body.dataset.module || 'index';
+
+  // Restore saved state
+  document.querySelectorAll('.quiz-card').forEach(card => {
+    const qid = card.dataset.qid;
+    const saved = localStorage.getItem(`az104_${pageId}_quiz_${qid}`);
+    if (saved) restoreQuiz(card, saved);
+  });
+
+  // Click handler
+  document.querySelectorAll('.quiz-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const card = opt.closest('.quiz-card');
+      if (card.classList.contains('answered')) return;
+
+      const correct = card.dataset.answer;
+      const chosen = opt.dataset.value;
+      const qid = card.dataset.qid;
+
+      // Mark all options
+      card.querySelectorAll('.quiz-option').forEach(o => {
+        o.classList.add('disabled');
+        if (o.dataset.value === correct) o.classList.add('correct');
+        if (o === opt && chosen !== correct) o.classList.add('wrong');
+        if (o === opt) o.classList.add('selected');
+      });
+
+      card.classList.add('answered');
+      card.classList.add(chosen === correct ? 'answered-correct' : 'answered-wrong');
+
+      // Save
+      localStorage.setItem(`az104_${pageId}_quiz_${qid}`, chosen);
+      updateQuizScore();
+    });
+  });
+
+  // Reset button
+  document.querySelectorAll('.reset-quiz-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.quiz-card').forEach(card => {
+        const qid = card.dataset.qid;
+        localStorage.removeItem(`az104_${pageId}_quiz_${qid}`);
+        card.classList.remove('answered', 'answered-correct', 'answered-wrong');
+        card.querySelectorAll('.quiz-option').forEach(o => {
+          o.classList.remove('disabled', 'correct', 'wrong', 'selected');
+        });
+      });
+      // Reset architect cards too
+      document.querySelectorAll('.architect-card').forEach(card => {
+        const aid = card.dataset.aid;
+        localStorage.removeItem(`az104_${pageId}_arch_${aid}`);
+        card.classList.remove('answered');
+        card.querySelectorAll('.arch-option').forEach(o => {
+          o.classList.remove('disabled', 'selected', 'best');
+        });
+      });
+      updateQuizScore();
+    });
+  });
+
+  updateQuizScore();
+}
+
+function restoreQuiz(card, chosen) {
+  const correct = card.dataset.answer;
+  card.querySelectorAll('.quiz-option').forEach(o => {
+    o.classList.add('disabled');
+    if (o.dataset.value === correct) o.classList.add('correct');
+    if (o.dataset.value === chosen && chosen !== correct) o.classList.add('wrong');
+    if (o.dataset.value === chosen) o.classList.add('selected');
+  });
+  card.classList.add('answered');
+  card.classList.add(chosen === correct ? 'answered-correct' : 'answered-wrong');
+}
+
+function updateQuizScore() {
+  const cards = document.querySelectorAll('.quiz-card');
+  if (!cards.length) return;
+  const answered = document.querySelectorAll('.quiz-card.answered').length;
+  const correct = document.querySelectorAll('.quiz-card.answered-correct').length;
+  const scoreEl = document.querySelector('.quiz-score');
+  if (scoreEl) {
+    if (answered === 0) {
+      scoreEl.textContent = 'No questions answered yet';
+    } else {
+      scoreEl.innerHTML = `<strong>${correct}/${cards.length}</strong> correct`;
     }
   }
-  return total ? Math.round((done / total) * 100) : 0;
+}
+
+// ============================================
+// Troubleshooting Progressive Hints
+// ============================================
+function initTroubleshoot() {
+  document.querySelectorAll('.prog-hint').forEach(hint => {
+    hint.addEventListener('click', () => {
+      hint.classList.toggle('revealed');
+    });
+  });
+}
+
+// ============================================
+// Architect's Corner
+// ============================================
+function initArchitect() {
+  const pageId = document.body.dataset.module || 'index';
+
+  // Restore saved state
+  document.querySelectorAll('.architect-card').forEach(card => {
+    const aid = card.dataset.aid;
+    const saved = localStorage.getItem(`az104_${pageId}_arch_${aid}`);
+    if (saved) restoreArchitect(card, saved);
+  });
+
+  document.querySelectorAll('.arch-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const card = opt.closest('.architect-card');
+      if (card.classList.contains('answered')) return;
+
+      const best = card.dataset.best;
+      const aid = card.dataset.aid;
+
+      card.querySelectorAll('.arch-option').forEach(o => {
+        o.classList.add('disabled');
+        if (o.dataset.value === best) o.classList.add('best');
+        if (o === opt) o.classList.add('selected');
+      });
+
+      card.classList.add('answered');
+      localStorage.setItem(`az104_${pageId}_arch_${aid}`, opt.dataset.value);
+    });
+  });
+}
+
+function restoreArchitect(card, chosen) {
+  const best = card.dataset.best;
+  card.querySelectorAll('.arch-option').forEach(o => {
+    o.classList.add('disabled');
+    if (o.dataset.value === best) o.classList.add('best');
+    if (o.dataset.value === chosen) o.classList.add('selected');
+  });
+  card.classList.add('answered');
 }

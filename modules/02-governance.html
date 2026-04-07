@@ -59,6 +59,7 @@
           <button class="tab-btn active" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
+          <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
         <!-- ==================== LAB TAB ==================== -->
@@ -442,6 +443,99 @@
             </div>
           </div>
 
+        </div>
+
+        <!-- ==================== PROVE IT TAB ==================== -->
+        <div id="tab-prove" class="tab-content">
+          <div class="prove-intro">
+            <h2>Prove You Know It</h2>
+            <p>Not memorization — understanding. Can you apply what you learned to real situations?</p>
+            <div class="score-display">Scenarios: <span class="quiz-score">No questions answered yet</span></div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon scenario">?</span> Quick Scenarios</div>
+
+            <div class="quiz-card" data-qid="q1" data-answer="B">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>A developer creates a VM in West Europe, but your company policy requires all resources in East US and West US only. The VM deployed successfully. What went wrong?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Azure Policy can't restrict locations</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>The "Allowed locations" policy wasn't assigned or was assigned at the wrong scope</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>The developer has Owner role which bypasses policy</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Azure Policy applies to everyone regardless of role — even Owners. If the VM was created, the policy either wasn't assigned, wasn't assigned at the right scope (subscription/resource group), or enforcement was set to "Disabled".</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Azure Policy absolutely can restrict locations (A) — that's one of its most common uses. Owner role (C) does NOT bypass policy. RBAC and Policy are independent systems.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q2" data-answer="C">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You need to let the help desk team create support tickets and manage VMs, but nothing else. What's the best approach?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Give them the Contributor role at the subscription level</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Give them the Owner role on a specific resource group</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Create a custom role combining VM Contributor and Support Request Contributor permissions</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Custom roles let you follow least-privilege. A custom role combining just the needed permissions gives them exactly what they need and nothing more.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Contributor (A) grants too much access — can manage everything except access. Owner (B) adds the ability to grant access to others. Both violate least-privilege.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q3" data-answer="A">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You applied a "Delete" resource lock to a resource group. A team member tries to delete a storage account inside it and gets denied. But they CAN still modify files in that storage account. Is this correct behavior?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Yes — Delete locks prevent deletion but allow modifications</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>No — Delete locks should prevent all changes</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>No — The lock shouldn't affect resources inside the group</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Delete locks only prevent deletion, not modification. If you need to prevent ALL changes, use a Read-only lock instead.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Confusing Delete locks with Read-only locks (B). Locks ARE inherited by child resources (C) — a lock on a resource group applies to all resources within it.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon troubleshoot">!</span> Troubleshooting Spot</div>
+
+            <div class="trouble-card">
+              <span class="trouble-label">Troubleshoot</span>
+              <p class="trouble-situation">You assigned the "Require a tag" policy to a resource group, but users can still create resources without tags. The policy shows as "Assigned" in the portal.</p>
+              <p class="trouble-question">What's going wrong?</p>
+              <div class="progressive-hints">
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 1</div><div class="prog-hint-content">Check the policy assignment's "Enforcement" setting — it might be set to "Disabled".</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 2</div><div class="prog-hint-content">New policy assignments can take up to 30 minutes to take effect. Wait and retry.</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Answer</div><div class="prog-hint-content answer">Most likely the enforcement is disabled (common when testing). Edit the assignment and set enforcement to "Enabled". Also note: policies only apply to NEW operations — existing non-compliant resources stay as-is until a remediation task is created.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon architect">&#9670;</span> Architect's Corner</div>
+
+            <div class="architect-card" data-aid="a1" data-best="C">
+              <span class="architect-label">Design Decision</span>
+              <p class="architect-situation">You're setting up governance for a company with dev, staging, and production environments across 3 subscriptions. Where should you assign your "Allowed locations" policy?</p>
+              <div class="architect-options">
+                <div class="arch-option" data-value="A"><div class="arch-option-title">Option A</div><div class="arch-option-desc">On each subscription individually. Direct assignment, 3 policies to manage.</div></div>
+                <div class="arch-option" data-value="B"><div class="arch-option-title">Option B</div><div class="arch-option-desc">On each resource group where resources are deployed. Granular control, many policies to manage.</div></div>
+                <div class="arch-option" data-value="C"><div class="arch-option-title">Option C</div><div class="arch-option-desc">On a management group containing all 3 subscriptions. Single policy inherited by all subscriptions.</div></div>
+              </div>
+              <div class="architect-reveal"><strong>Why this is the best choice</strong>Management group assignment gives you one policy to maintain that covers all current and future subscriptions. Individual subscription assignments (A) work but multiply your management overhead. Resource group level (B) is even more granular but becomes unmanageable quickly. The whole point of management groups is exactly this — centralized governance that inherits downward.</div>
+            </div>
+          </div>
+
+          <button class="reset-quiz-btn">&#8635; Reset All Answers</button>
         </div>
 
       </div>

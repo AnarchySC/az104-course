@@ -62,6 +62,7 @@
           <button class="tab-btn active" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
+          <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
         <!-- ==================== LAB TAB ==================== -->
@@ -383,6 +384,99 @@ http://&lt;gateway-ip&gt;/
             </div>
           </div>
 
+        </div>
+
+        <!-- ==================== PROVE IT TAB ==================== -->
+        <div id="tab-prove" class="tab-content">
+          <div class="prove-intro">
+            <h2>Prove You Know It</h2>
+            <p>Not memorization — understanding. Can you apply what you learned to real situations?</p>
+            <div class="score-display">Scenarios: <span class="quiz-score">No questions answered yet</span></div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon scenario">?</span> Quick Scenarios</div>
+
+            <div class="quiz-card" data-qid="q1" data-answer="C">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>Your web app needs to route /api/* requests to backend API servers and /static/* to a CDN-origin pool. Which Azure service do you need?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Azure Load Balancer — it can route by URL path</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Azure Traffic Manager — it does DNS-based routing</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Azure Application Gateway — it supports Layer 7 path-based routing</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Application Gateway operates at Layer 7 (HTTP) and supports path-based routing rules. Load Balancer is Layer 4 (TCP/UDP) — it can't inspect URLs. Traffic Manager is DNS-based and routes at the domain level, not the path level.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Load Balancer (A) works at Layer 4 and has no visibility into HTTP URLs. Traffic Manager (B) resolves DNS to different endpoints — it can't split paths within the same domain.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q2" data-answer="B">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>Your Load Balancer health probe is configured for TCP on port 80 with a 5-second interval. One backend VM's web server crashed but the VM itself is still running. Will the Load Balancer detect this?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>No — TCP probes only check if the VM is running, not the web server</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Yes — TCP probe checks if port 80 is accepting connections; a crashed web server won't accept connections</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>No — you need an HTTP probe to check web servers</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>A TCP health probe attempts a TCP connection to the specified port. If the web server process crashed, port 80 won't accept connections and the probe will fail, marking the VM as unhealthy. HTTP probes check for a specific status code (like 200) which adds application-level validation, but TCP probes DO detect crashed services.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>TCP probes don't just ping the VM (A is wrong) — they attempt a real TCP handshake on the specified port. While HTTP probes offer deeper validation, TCP probes are sufficient for detecting a crashed service (C is wrong).</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q3" data-answer="A">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You have a Standard SKU Load Balancer. Backend VMs are healthy but users report they can't access the site. The frontend public IP is correct. What should you check first?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>NSG rules — Standard LB requires explicit NSG rules to allow traffic</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>The VM operating system firewall</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Whether the VMs have public IPs</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Standard SKU Load Balancers require an NSG rule to allow traffic. Unlike Basic SKU, Standard LB blocks all traffic by default until an NSG explicitly allows it. This is the most common gotcha when migrating from Basic to Standard.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>While OS firewalls (B) can block traffic, the NSG is the first thing to check with Standard SKU. VMs behind a load balancer don't need public IPs (C) — the LB frontend IP handles inbound traffic.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon troubleshoot">!</span> Troubleshooting Spot</div>
+
+            <div class="trouble-card">
+              <span class="trouble-label">Troubleshoot</span>
+              <p class="trouble-situation">Your Application Gateway is deployed and shows 2 healthy backends. But browsing to the frontend IP gives a 502 Bad Gateway error.</p>
+              <p class="trouble-question">What's wrong?</p>
+              <div class="progressive-hints">
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 1</div><div class="prog-hint-content">502 means the gateway received an invalid response from the backend. Check if the backend VMs are actually serving HTTP on the port specified in the backend settings.</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 2</div><div class="prog-hint-content">Check the backend settings — is the port configured to match what the web server is listening on? Also check if the health probe path returns a 200 status.</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Answer</div><div class="prog-hint-content answer">The most common cause is a port mismatch — the backend HTTP settings specify a port (e.g., 80) but the web server is listening on a different port (e.g., 8080). Also verify the health probe path (e.g., "/") returns HTTP 200. If the probe path returns 404 or 500, the gateway marks backends as unhealthy even if the main app works.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon architect">&#9670;</span> Architect's Corner</div>
+
+            <div class="architect-card" data-aid="a1" data-best="C">
+              <span class="architect-label">Design Decision</span>
+              <p class="architect-situation">Your company's website gets traffic from users worldwide. You need: SSL termination, path-based routing for /api vs /web, WAF protection, and automatic failover between East US and West US regions. Which combination do you use?</p>
+              <div class="architect-options">
+                <div class="arch-option" data-value="A"><div class="arch-option-title">Two Application Gateways (one per region) behind Azure Traffic Manager</div><div class="arch-option-desc">DNS failover, regional App Gateways handle routing/WAF</div></div>
+                <div class="arch-option" data-value="B"><div class="arch-option-title">Two Azure Load Balancers (one per region) behind Azure Front Door</div><div class="arch-option-desc">Global L7 + regional L4</div></div>
+                <div class="arch-option" data-value="C"><div class="arch-option-title">Azure Front Door with WAF, pointing to backend pools in both regions</div><div class="arch-option-desc">Global L7 with built-in WAF, path routing, and health-based failover</div></div>
+              </div>
+              <div class="architect-reveal"><strong>Why this is the best choice</strong>Azure Front Door is purpose-built for this scenario — global Layer 7 load balancing with built-in WAF, SSL termination, path-based routing, and automatic health-based failover between regions. Option A works but adds DNS-level latency for failover (TTL-dependent). Option B uses L4 Load Balancers regionally which can't do path-based routing. Front Door handles everything in one service.</div>
+            </div>
+          </div>
+
+          <button class="reset-quiz-btn">&#8635; Reset All Answers</button>
         </div>
 
       </div><!-- /tab-container -->

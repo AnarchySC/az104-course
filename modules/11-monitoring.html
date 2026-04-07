@@ -62,6 +62,7 @@
           <button class="tab-btn active" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
+          <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
         <!-- ==================== LAB TAB ==================== -->
@@ -451,6 +452,99 @@ InsightsMetrics
             </div>
           </div>
 
+        </div>
+
+        <!-- ==================== PROVE IT TAB ==================== -->
+        <div id="tab-prove" class="tab-content">
+          <div class="prove-intro">
+            <h2>Prove You Know It</h2>
+            <p>Not memorization — understanding. Can you apply what you learned to real situations?</p>
+            <div class="score-display">Scenarios: <span class="quiz-score">No questions answered yet</span></div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon scenario">?</span> Quick Scenarios</div>
+
+            <div class="quiz-card" data-qid="q1" data-answer="B">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You created an alert rule for "VM Deleted" scoped to your subscription. A colleague deleted a VM in a different resource group than expected. Did the alert fire?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>No &mdash; alerts only fire in the resource group where they're configured</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Yes &mdash; the alert is scoped to the subscription, which includes all resource groups</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>No &mdash; delete alerts require specific VM targeting</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Alert scope determines what gets monitored. Subscription scope covers ALL resource groups and resources within it. The alert fires for any VM deletion anywhere in the subscription.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Confusing alert scope with alert rule resource group. The resource group where the alert rule lives is just for management &mdash; the scope determines what triggers the alert.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q2" data-answer="C">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You set up an email action group for critical alerts. During a weekend outage, the on-call engineer didn't get the email for 20 minutes. What should you add?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>A second email address as backup</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>A webhook to create a Jira ticket</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>SMS and/or voice call notifications to the action group</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Email is not reliable for urgent alerts &mdash; it can be delayed, filtered, or missed. SMS and voice calls provide immediate, hard-to-miss notifications. Best practice: use email for record-keeping AND SMS/voice for urgency.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>A second email has the same delay problem. Webhooks to Jira are for tracking, not immediate notification. For critical alerts, you need push-based channels like SMS or voice.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q3" data-answer="A">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>Your team gets 50+ alert emails every night during scheduled maintenance. Most are routine and can be ignored. How do you fix this without disabling the alerts?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Create an alert processing rule that suppresses notifications during the maintenance window</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Delete the alert rules and recreate them after maintenance</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Add a filter to the email action group to ignore certain alerts</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Alert processing rules can suppress notifications on a schedule (e.g., Sunday 2-4 AM) without disabling the actual alert rules. The alerts still fire and are recorded &mdash; you just don't get notified.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Deleting rules loses monitoring coverage. Email filters are fragile and outside Azure's control. Alert processing rules are the purpose-built solution for this exact scenario.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon troubleshoot">!</span> Troubleshooting Spot</div>
+
+            <div class="trouble-card">
+              <span class="trouble-label">Troubleshoot</span>
+              <p class="trouble-situation">You wrote a KQL query in Log Analytics but it returns no data: <code>Heartbeat | where Computer == 'myVM' | where TimeGenerated > ago(1h)</code>. The VM is running and was recently enabled for monitoring.</p>
+              <p class="trouble-question">What's wrong?</p>
+              <div class="progressive-hints">
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 1</div><div class="prog-hint-content">VM Insights / Log Analytics agent takes time to start sending data. If you just enabled it, wait 10-15 minutes for initial data ingestion.</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 2</div><div class="prog-hint-content">Check if the Computer name matches exactly &mdash; KQL string comparisons are case-sensitive. Try <code>Heartbeat | where Computer contains 'myVM'</code> instead.</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Answer</div><div class="prog-hint-content answer">Two common issues: 1) The agent was just installed and hasn't sent data yet &mdash; initial ingestion takes 5-15 minutes, and some data types (like InsightsMetrics) take even longer. 2) The Computer name doesn't match exactly &mdash; use <code>Heartbeat | distinct Computer</code> to see the actual names in your workspace. Computer names often include the FQDN (e.g., "myVM.internal.cloudapp.net" instead of "myVM").</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon architect">&#9670;</span> Architect's Corner</div>
+
+            <div class="architect-card" data-aid="a1" data-best="B">
+              <span class="architect-label">Design Decision</span>
+              <p class="architect-situation">You're setting up monitoring for a production environment with 20 VMs, 5 App Services, and 3 SQL databases. What's your monitoring strategy?</p>
+              <div class="architect-options">
+                <div class="arch-option" data-value="A"><div class="arch-option-title">Option A: Azure Monitor alerts on each individual resource with email notifications</div><div class="arch-option-desc">Granular, 28+ individual alert rules, email-only</div></div>
+                <div class="arch-option" data-value="B"><div class="arch-option-title">Option B: Centralized Log Analytics workspace + metric alerts with tiered action groups (email for warnings, SMS+email for critical)</div><div class="arch-option-desc">Unified monitoring, severity-based notifications, dashboards</div></div>
+                <div class="arch-option" data-value="C"><div class="arch-option-title">Option C: Third-party monitoring tool (Datadog/New Relic) replacing Azure Monitor entirely</div><div class="arch-option-desc">Powerful, but additional cost and integration overhead</div></div>
+              </div>
+              <div class="architect-reveal"><strong>Why this is the best choice</strong>A centralized Log Analytics workspace gives you one place to query across all resources. Metric alerts catch threshold breaches (CPU, DTU, response time). Tiered action groups ensure critical issues get immediate attention (SMS/voice) while warnings only email. Build Azure dashboards with KQL queries for real-time visibility. Option A creates alert sprawl with no unified view. Option C can complement Azure Monitor but shouldn't replace it &mdash; Azure Monitor provides native integration and is already included in your Azure costs.</div>
+            </div>
+          </div>
+
+          <button class="reset-quiz-btn">&#8635; Reset All Answers</button>
         </div>
 
       </div><!-- /tab-container -->

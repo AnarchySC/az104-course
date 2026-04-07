@@ -62,6 +62,7 @@
           <button class="tab-btn active" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
+          <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
         <!-- ==================== LAB TAB ==================== -->
@@ -480,6 +481,99 @@
             </div>
           </div>
 
+        </div>
+
+        <!-- ==================== PROVE IT TAB ==================== -->
+        <div id="tab-prove" class="tab-content">
+          <div class="prove-intro">
+            <h2>Prove You Know It</h2>
+            <p>Not memorization — understanding. Can you apply what you learned to real situations?</p>
+            <div class="score-display">Scenarios: <span class="quiz-score">No questions answered yet</span></div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon scenario">?</span> Quick Scenarios</div>
+
+            <div class="quiz-card" data-qid="q1" data-answer="C">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>A single VM with a Premium SSD gives you 99.9% SLA. Your app needs 99.99%. What do you do?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Upgrade to a larger VM size</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Add a Premium SSD data disk</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Deploy two VMs across Availability Zones with a Load Balancer</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>99.99% SLA requires Availability Zones (VMs in separate physical datacenters within a region). VM size and disk type don't affect the SLA beyond the single-VM 99.9% for Premium SSD. Availability Sets give 99.95%. Only zones reach 99.99%.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>VM size (A) affects performance, not availability SLA. Adding disks (B) affects storage capacity, not uptime guarantees. SLA is about redundancy architecture, not hardware specs.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q2" data-answer="B">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You resized a VM from D2s_v3 to D4s_v3 and it rebooted. Is this expected?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>No — resizing should happen without downtime</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Yes — resizing a VM requires a restart to allocate new hardware</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Only if you change VM families (e.g., D-series to E-series)</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>All VM resize operations require a restart because Azure needs to move the VM to hardware that can support the new size. This applies even when staying in the same family. Plan for downtime or use scale sets for zero-downtime scaling.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>There is no live resize for Azure VMs (A is wrong). The restart happens regardless of whether you stay in the same family or switch families (C is wrong).</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q3" data-answer="A">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>Your VM Scale Set has autoscale: scale out at CPU > 70% with a 5-minute cooldown. After a CPU spike, 3 new instances were added. But CPU is now at 30% across all instances. What happens next?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Nothing immediately — the scale-in rule (if configured) will evaluate and eventually remove excess instances</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>The 3 new instances are immediately removed</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>The scale set keeps all instances forever until manually removed</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Scale-in is not automatic unless you've configured a scale-in rule. If you only configured scale-out, instances stay. If you have a scale-in rule (e.g., CPU &lt; 30% for 10 min), it will evaluate after the cooldown and gradually remove instances. Instances are never immediately removed — the cooldown and evaluation period protect against thrashing.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Instances are never immediately removed (B is wrong) — cooldown periods prevent this. Instances won't stay forever IF a scale-in rule exists (C is wrong), but they will if you forgot to configure one.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon troubleshoot">!</span> Troubleshooting Spot</div>
+
+            <div class="trouble-card">
+              <span class="trouble-label">Troubleshoot</span>
+              <p class="trouble-situation">You're trying to resize a VM to Standard_E4s_v3 but the size doesn't appear in the available sizes list. The VM is currently running in East US.</p>
+              <p class="trouble-question">What's wrong?</p>
+              <div class="progressive-hints">
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 1</div><div class="prog-hint-content">Not all VM sizes are available in every region. Check if E4s_v3 is supported in East US.</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 2</div><div class="prog-hint-content">Even if the size exists in the region, the specific hardware cluster your VM is on might not support it.</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Answer</div><div class="prog-hint-content answer">When a VM is allocated to a hardware cluster, only sizes supported by that cluster appear. To access other sizes: deallocate the VM first (this releases it from the current cluster), then resize — you'll see the full list of sizes available in the region. If the size still doesn't appear, it's not available in that region at all.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon architect">&#9670;</span> Architect's Corner</div>
+
+            <div class="architect-card" data-aid="a1" data-best="B">
+              <span class="architect-label">Design Decision</span>
+              <p class="architect-situation">You're deploying a web application that gets variable traffic — 100 users during business hours, 10,000 during flash sales (unpredictable). What compute strategy do you use?</p>
+              <div class="architect-options">
+                <div class="arch-option" data-value="A"><div class="arch-option-title">A single large VM that can handle peak load</div><div class="arch-option-desc">Always on, pays for max capacity 24/7</div></div>
+                <div class="arch-option" data-value="B"><div class="arch-option-title">A VM Scale Set with autoscale rules based on CPU and request count</div><div class="arch-option-desc">Scales out for demand, scales in to save cost</div></div>
+                <div class="arch-option" data-value="C"><div class="arch-option-title">A fixed pool of 20 VMs behind a load balancer</div><div class="arch-option-desc">Handles moderate spikes, consistent cost</div></div>
+              </div>
+              <div class="architect-reveal"><strong>Why this is the best choice</strong>VM Scale Sets with autoscale match your variable-traffic pattern perfectly. You pay for 2-3 instances during quiet periods and scale to 15+ during flash sales. Option A wastes money 90% of the time paying for capacity you don't need. Option C is better but still pays for 20 VMs during off-hours. Autoscale handles the unpredictability — configure scale-out on CPU > 70% AND custom metrics like HTTP request queue length for more responsive scaling.</div>
+            </div>
+          </div>
+
+          <button class="reset-quiz-btn">&#8635; Reset All Answers</button>
         </div>
 
       </div><!-- /tab-container -->

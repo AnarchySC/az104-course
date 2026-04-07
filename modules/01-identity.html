@@ -56,6 +56,7 @@
         <button class="tab-btn active" data-tab="tab-lab">Lab</button>
         <button class="tab-btn" data-tab="tab-demo">Demo</button>
         <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
+        <button class="tab-btn" data-tab="tab-prove">Prove It</button>
       </div>
 
       <!-- ==================== LAB TAB ==================== -->
@@ -284,6 +285,100 @@
         </div>
 
       </div>
+
+      <!-- ==================== PROVE IT TAB ==================== -->
+      <div id="tab-prove" class="tab-content">
+        <div class="prove-intro">
+          <h2>Prove You Know It</h2>
+          <p>Not memorization — understanding. Can you apply what you learned to real situations?</p>
+          <div class="score-display">Scenarios: <span class="quiz-score">No questions answered yet</span></div>
+        </div>
+
+        <div class="assess-section">
+          <div class="assess-section-title"><span class="assess-icon scenario">?</span> Quick Scenarios</div>
+
+          <div class="quiz-card" data-qid="q1" data-answer="B">
+            <div class="quiz-scenario">
+              <span class="scenario-label">Scenario</span>
+              <p>A new contractor needs access to your Azure portal for 3 months. They have their own email. How do you add them?</p>
+            </div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Create a new user with your domain</span></div>
+              <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Invite as external guest user</span></div>
+              <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Share your admin credentials</span></div>
+            </div>
+            <div class="quiz-explanation">
+              <div class="explanation-box why-right"><strong>Why this is correct</strong>Guest users are the right approach for external people — they authenticate with their own identity provider. Creating a domain user would give them a permanent internal identity they don't need.</div>
+              <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Creating a domain user (A) gives a permanent internal identity — overkill for a 3-month contractor. Sharing credentials (C) violates zero-trust principles and makes auditing impossible.</div>
+            </div>
+          </div>
+
+          <div class="quiz-card" data-qid="q2" data-answer="C">
+            <div class="quiz-scenario">
+              <span class="scenario-label">Scenario</span>
+              <p>Your company wants groups that automatically add new Marketing department hires. What do you need?</p>
+            </div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>A Microsoft 365 group with assigned membership</span></div>
+              <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>A security group and a PowerShell script</span></div>
+              <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>An Entra ID Premium P1 license and a dynamic security group</span></div>
+            </div>
+            <div class="quiz-explanation">
+              <div class="explanation-box why-right"><strong>Why this is correct</strong>Dynamic groups auto-populate based on user attributes like department. This requires P1 licensing. It's the Azure-native, zero-maintenance solution.</div>
+              <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Assigned groups (A) require manual updates every time someone joins or leaves. A PowerShell script (B) works but isn't the Azure-native solution and requires maintenance.</div>
+            </div>
+          </div>
+
+          <div class="quiz-card" data-qid="q3" data-answer="A">
+            <div class="quiz-scenario">
+              <span class="scenario-label">Scenario</span>
+              <p>You deleted a user yesterday. Your manager says they need to be reinstated. What do you do?</p>
+            </div>
+            <div class="quiz-options">
+              <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Restore them from the Deleted users blade within 30 days</span></div>
+              <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Create a new user with the same name</span></div>
+              <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Contact Microsoft support to recover the account</span></div>
+            </div>
+            <div class="quiz-explanation">
+              <div class="explanation-box why-right"><strong>Why this is correct</strong>Deleted users are soft-deleted and can be restored within 30 days with all properties intact. This preserves group memberships, role assignments, and audit history.</div>
+              <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Creating a new user (B) would lose group memberships, role assignments, and audit history. Microsoft support (C) is unnecessary — you can self-service this in the portal.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="assess-section">
+          <div class="assess-section-title"><span class="assess-icon troubleshoot">!</span> Troubleshooting Spot</div>
+
+          <div class="trouble-card">
+            <span class="trouble-label">Troubleshoot</span>
+            <p class="trouble-situation">You invited a guest user but they say they never received the invitation email. The user appears in your directory with status "Pending acceptance".</p>
+            <p class="trouble-question">What should you check?</p>
+            <div class="progressive-hints">
+              <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 1</div><div class="prog-hint-content">Check if the email address was entered correctly in the invitation.</div></div>
+              <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 2</div><div class="prog-hint-content">Ask the guest to check their spam/junk folder — Azure invitation emails sometimes get filtered.</div></div>
+              <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Answer</div><div class="prog-hint-content answer">You can resend the invitation from the user's profile. Navigate to the guest user > click "Resend invitation." Also verify their email doesn't have a typo. If the org blocks external emails, they may need to whitelist microsoft-noreply@microsoft.com.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="assess-section">
+          <div class="assess-section-title"><span class="assess-icon architect">&#9670;</span> Architect's Corner</div>
+
+          <div class="architect-card" data-aid="a1" data-best="B">
+            <span class="architect-label">Design Decision</span>
+            <p class="architect-situation">Your company has 500 employees across 8 departments. You need to manage access to Azure resources by department. How do you structure groups?</p>
+            <div class="architect-options">
+              <div class="arch-option" data-value="A"><div class="arch-option-title">Option A</div><div class="arch-option-desc">Create one large "All Employees" group and assign permissions per resource. Simple to set up, one group to manage.</div></div>
+              <div class="arch-option" data-value="B"><div class="arch-option-title">Option B</div><div class="arch-option-desc">Create a dynamic security group per department based on the department attribute. Auto-populates as users join/leave, requires P1.</div></div>
+              <div class="arch-option" data-value="C"><div class="arch-option-title">Option C</div><div class="arch-option-desc">Create nested static groups — department groups inside a master group. Manual membership, supports group nesting.</div></div>
+            </div>
+            <div class="architect-reveal"><strong>Why this is the best choice</strong>Dynamic groups per department scale automatically. When HR updates a user's department attribute, group membership adjusts without admin intervention. Option A gives everyone the same access (violates least privilege). Option C works but requires manual maintenance that becomes error-prone at 500+ users.</div>
+          </div>
+        </div>
+
+        <button class="reset-quiz-btn">&#8635; Reset All Answers</button>
+      </div>
+
     </div>
   </div>
 

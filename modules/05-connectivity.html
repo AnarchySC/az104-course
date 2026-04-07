@@ -62,6 +62,7 @@
           <button class="tab-btn active" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
+          <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
         <!-- ==================== LAB TAB ==================== -->
@@ -470,6 +471,99 @@
             </div>
           </div>
 
+        </div>
+
+        <!-- ==================== PROVE IT TAB ==================== -->
+        <div id="tab-prove" class="tab-content">
+          <div class="prove-intro">
+            <h2>Prove You Know It</h2>
+            <p>Not memorization — understanding. Can you apply what you learned to real situations?</p>
+            <div class="score-display">Scenarios: <span class="quiz-score">No questions answered yet</span></div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon scenario">?</span> Quick Scenarios</div>
+
+            <div class="quiz-card" data-qid="q1" data-answer="B">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>VNet-A is peered with VNet-B, and VNet-B is peered with VNet-C. Can VNet-A communicate with VNet-C?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Yes — peering is transitive so traffic flows through VNet-B</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>No — VNet peering is non-transitive; A and C need their own peering or a hub route</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Yes — but only if all three are in the same region</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>VNet peering is non-transitive. Each pair needs explicit peering or you need UDRs through a hub/NVA. This is fundamental to Azure networking.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Many assume peering works like a physical switch where all connected networks can see each other. In Azure, peering is a direct link between exactly two VNets — no transit.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q2" data-answer="C">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You set up peering between two VNets. One side shows 'Connected' but the other shows 'Initiated'. Can traffic flow?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Yes — one-sided peering is enough</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Yes — but only in one direction</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>No — both sides must show 'Connected' for traffic to flow</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Peering requires both sides to be configured and showing "Connected". "Initiated" means only one side has been set up. Traffic won't flow until the reciprocal peering is created.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Peering is not like a one-way route — it's a bilateral agreement. "Initiated" is a transitional state that means the other side hasn't accepted yet.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q3" data-answer="A">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You created a user-defined route that sends 10.0.0.0/16 traffic to a virtual appliance at 10.0.1.7. But traffic to 10.0.0.0/16 is still taking the default system route. Why?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>The route table isn't associated with the source subnet</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>User-defined routes have lower priority than system routes</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>The virtual appliance must be a VM with a public IP</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Route tables only apply when associated with a subnet. Creating the table and adding routes isn't enough — you must associate it with the subnet whose traffic you want to redirect. UDRs DO override system routes when properly associated.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>UDRs actually have HIGHER priority than system routes (B is wrong). The virtual appliance doesn't need a public IP (C is wrong) — it just needs IP forwarding enabled.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon troubleshoot">!</span> Troubleshooting Spot</div>
+
+            <div class="trouble-card">
+              <span class="trouble-label">Troubleshoot</span>
+              <p class="trouble-situation">You peered two VNets and both show 'Connected'. But VMs still can't communicate on TCP port 3389 (RDP).</p>
+              <p class="trouble-question">What's wrong?</p>
+              <div class="progressive-hints">
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 1</div><div class="prog-hint-content">Peering enables network-level reachability, but NSGs still apply. Check if either VM's NSG blocks port 3389.</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 2</div><div class="prog-hint-content">Check if the VMs have public IPs and you're testing against the public IP. Peering works on private IPs only.</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Answer</div><div class="prog-hint-content answer">Most likely an NSG is blocking port 3389. Peering makes the networks reachable but doesn't override security rules. Check inbound NSG rules on the destination VM's subnet and NIC. Also ensure you're using the private IP address — peering routes private traffic only, not public IP traffic.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon architect">&#9670;</span> Architect's Corner</div>
+
+            <div class="architect-card" data-aid="a1" data-best="B">
+              <span class="architect-label">Design Decision</span>
+              <p class="architect-situation">You have 5 workload VNets that all need to talk to each other and to a shared services VNet (DNS, monitoring). How do you connect them?</p>
+              <div class="architect-options">
+                <div class="arch-option" data-value="A"><div class="arch-option-title">Full mesh peering — peer every VNet to every other VNet (15 peerings)</div><div class="arch-option-desc">Direct connections, lowest latency, most peerings to manage</div></div>
+                <div class="arch-option" data-value="B"><div class="arch-option-title">Hub-and-spoke — peer all workloads to shared services hub, use UDRs for spoke-to-spoke</div><div class="arch-option-desc">Centralized, scalable, requires NVA/firewall in hub</div></div>
+                <div class="arch-option" data-value="C"><div class="arch-option-title">One giant VNet with subnets instead of separate VNets</div><div class="arch-option-desc">No peering needed, simpler networking</div></div>
+              </div>
+              <div class="architect-reveal"><strong>Why this is the best choice</strong>Hub-and-spoke is the Azure-recommended pattern for this scenario. The hub hosts shared services and an NVA/firewall that routes spoke-to-spoke traffic. You manage only 5 peerings instead of 15, and adding new spokes is simple. Full mesh (A) becomes unmanageable as VNets grow. One giant VNet (C) loses the isolation and security benefits that separate VNets provide.</div>
+            </div>
+          </div>
+
+          <button class="reset-quiz-btn">&#8635; Reset All Answers</button>
         </div>
 
       </div><!-- /tab-container -->

@@ -62,6 +62,7 @@
           <button class="tab-btn active" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
+          <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
         <!-- ==================== LAB TAB ==================== -->
@@ -435,6 +436,99 @@
             </div>
           </div>
 
+        </div>
+
+        <!-- ==================== PROVE IT TAB ==================== -->
+        <div id="tab-prove" class="tab-content">
+          <div class="prove-intro">
+            <h2>Prove You Know It</h2>
+            <p>Not memorization — understanding. Can you apply what you learned to real situations?</p>
+            <div class="score-display">Scenarios: <span class="quiz-score">No questions answered yet</span></div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon scenario">?</span> Quick Scenarios</div>
+
+            <div class="quiz-card" data-qid="q1" data-answer="B">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>Your Recovery Services vault is in East US. Can you back up a VM in West US to this vault?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Yes &mdash; vaults can back up VMs in any region</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>No &mdash; the vault must be in the same region as the VM</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Yes &mdash; but only with GRS redundancy enabled</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Recovery Services vaults can only back up resources in the SAME region. To protect VMs in West US, you need a vault in West US. This is a hard requirement regardless of the vault's redundancy setting.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>GRS replicates backup data to a paired region for redundancy, but it does not allow cross-region backup configuration. The vault and backed-up resource must always be co-located.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q2" data-answer="C">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You accidentally deleted a backup item from your Recovery Services vault. The data is gone immediately, right?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Yes &mdash; deletion is permanent and immediate</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>No &mdash; it moves to a recycle bin for 7 days</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>No &mdash; soft delete retains backup data for 14 additional days</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Soft delete (enabled by default) keeps deleted backup data for 14 extra days. During this period, you can undelete the item and restore from it. This protects against accidental or malicious deletion. After 14 days, the data is permanently removed.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>There is no 7-day recycle bin. The retention period is specifically 14 days, and soft delete is enabled by default on all new vaults.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q3" data-answer="A">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>Your company requires that production VMs can failover to another region within 15 minutes if the primary region goes down. What do you configure?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Azure Site Recovery with continuous replication to a secondary region</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Azure Backup with hourly backup frequency</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>VM snapshots taken every 15 minutes</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Site Recovery continuously replicates VM disks to a secondary region. Failover takes minutes and creates running VMs in the target region.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Backup restores take much longer (must provision VMs and restore disks). Snapshots are point-in-time copies in the same region &mdash; they don't help if the region is down.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon troubleshoot">!</span> Troubleshooting Spot</div>
+
+            <div class="trouble-card">
+              <span class="trouble-label">Troubleshoot</span>
+              <p class="trouble-situation">You're trying to delete a Recovery Services vault but get an error: "Vault cannot be deleted as there are existing resources within the vault."</p>
+              <p class="trouble-question">What's wrong?</p>
+              <div class="progressive-hints">
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 1</div><div class="prog-hint-content">You must stop protection and delete backup data for ALL backup items first. Check Backup Items for any remaining protected resources.</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 2</div><div class="prog-hint-content">Also check for registered infrastructure servers (Storage Accounts, SQL servers) under "Backup Infrastructure" and replication items under "Replicated Items".</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Answer</div><div class="prog-hint-content answer">Vault deletion requires removing ALL dependencies in this order: 1) Stop backup and delete data for all backup items, 2) Unregister all backup infrastructure servers, 3) Delete all replicated items (Site Recovery), 4) Disable soft delete (otherwise deleted items still block vault deletion for 14 days), 5) Then delete the vault. Use the portal's "Delete" button &mdash; it will tell you exactly what's still blocking.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon architect">&#9670;</span> Architect's Corner</div>
+
+            <div class="architect-card" data-aid="a1" data-best="C">
+              <span class="architect-label">Design Decision</span>
+              <p class="architect-situation">Your company has a 3-tier app (web, app, database) in East US. Management wants DR with RPO of 1 hour and RTO of 30 minutes. How do you architect this?</p>
+              <div class="architect-options">
+                <div class="arch-option" data-value="A"><div class="arch-option-title">Option A: Azure Backup only &mdash; daily backups of all VMs to a vault in West US</div><div class="arch-option-desc">Simple setup, RPO = 24 hours, RTO = hours</div></div>
+                <div class="arch-option" data-value="B"><div class="arch-option-title">Option B: Site Recovery for all 3 tiers replicating to West US</div><div class="arch-option-desc">Continuous replication, fast failover, but database consistency risk</div></div>
+                <div class="arch-option" data-value="C"><div class="arch-option-title">Option C: Site Recovery for web and app tiers + database-native replication (SQL Always On / geo-replication) for the data tier</div><div class="arch-option-desc">ASR handles compute, database handles its own replication for consistency</div></div>
+              </div>
+              <div class="architect-reveal"><strong>Why this is the best choice</strong>Databases need their own replication mechanism because Site Recovery replicates at the disk level &mdash; it can't guarantee transactional consistency for an active database. SQL Always On or Azure SQL geo-replication provides transaction-consistent failover. ASR handles the web and app tier VMs. Option A has RPO of 24h (too slow). Option B risks database corruption during failover because disk-level replication can capture partial transactions.</div>
+            </div>
+          </div>
+
+          <button class="reset-quiz-btn">&#8635; Reset All Answers</button>
         </div>
 
       </div><!-- /tab-container -->

@@ -62,6 +62,7 @@
           <button class="tab-btn active" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
+          <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
         <!-- ==================== LAB TAB ==================== -->
@@ -369,6 +370,99 @@
             </div>
           </div>
 
+        </div>
+
+        <!-- ==================== PROVE IT TAB ==================== -->
+        <div id="tab-prove" class="tab-content">
+          <div class="prove-intro">
+            <h2>Prove You Know It</h2>
+            <p>Not memorization — understanding. Can you apply what you learned to real situations?</p>
+            <div class="score-display">Scenarios: <span class="quiz-score">No questions answered yet</span></div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon scenario">?</span> Quick Scenarios</div>
+
+            <div class="quiz-card" data-qid="q1" data-answer="B">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You created two VNets: 10.20.0.0/16 and 10.20.0.0/16 (same range). Can you peer them?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Yes — Azure will handle routing between identical ranges</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>No — peered VNets cannot have overlapping address spaces</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Yes — but only if they're in different regions</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Azure VNet peering requires non-overlapping address spaces. This is a hard requirement regardless of region. Plan your IP ranges carefully before creating VNets.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Azure cannot route between identical address spaces (A) — it wouldn't know which VNet to send traffic to. Region doesn't matter (C) — overlapping ranges are blocked in both local and global peering.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q2" data-answer="C">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You have an NSG with these inbound rules: Allow SSH (port 22) at priority 100, Deny All at priority 200. Web traffic on port 80 is being blocked. Why?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>The NSG is broken</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>SSH rules automatically block other ports</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>The "Deny All" rule at priority 200 is blocking port 80 before the default AllowVNetInBound rule (65000) can allow it</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>NSG rules process in priority order (lowest number first). Your explicit Deny All at 200 fires before the default rules at 65000+. You need to add an Allow HTTP rule at a priority lower than 200 (like 150).</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>NSGs don't break (A) — they work exactly as configured. SSH rules don't affect other ports (B) — each rule is evaluated independently based on port and priority.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q3" data-answer="A">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You created a private DNS zone but VMs in your VNet can't resolve records from it. What's missing?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>The private DNS zone isn't linked to the VNet</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>You need a public IP on each VM</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Private DNS zones only work with premium VNets</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Private DNS zones must be explicitly linked to each VNet that needs to resolve records. Without the link, the VNet's DNS resolver doesn't know about your zone.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Public IPs (B) are for internet-facing resources — private DNS is internal only. There's no such thing as "premium VNets" (C) — all VNets support private DNS zones.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon troubleshoot">!</span> Troubleshooting Spot</div>
+
+            <div class="trouble-card">
+              <span class="trouble-label">Troubleshoot</span>
+              <p class="trouble-situation">You associated an NSG with a subnet. You added a rule to allow HTTP on port 80 with priority 100 and action Allow. But web traffic still can't reach your VMs.</p>
+              <p class="trouble-question">What's going wrong?</p>
+              <div class="progressive-hints">
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 1</div><div class="prog-hint-content">Check if there's also an NSG on the VM's NIC — traffic must pass BOTH the subnet NSG and the NIC NSG.</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 2</div><div class="prog-hint-content">Check the Source setting on your rule — if it's set to a specific IP or service tag, traffic from other sources will be denied.</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Answer</div><div class="prog-hint-content answer">Most likely there's a second NSG on the network interface. NSGs are evaluated independently at both subnet and NIC levels. Traffic must be allowed by BOTH. Check the NIC-level NSG and either add an allow rule there too, or remove the NIC NSG to rely solely on the subnet NSG.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon architect">&#9670;</span> Architect's Corner</div>
+
+            <div class="architect-card" data-aid="a1" data-best="B">
+              <span class="architect-label">Design Decision</span>
+              <p class="architect-situation">You're designing the network for a company with web servers (public-facing), application servers (internal), and database servers (highly restricted). How do you structure your VNet?</p>
+              <div class="architect-options">
+                <div class="arch-option" data-value="A"><div class="arch-option-title">Option A</div><div class="arch-option-desc">One VNet, one subnet, use NSG rules to separate traffic. Simple layout, all security via NSG rules.</div></div>
+                <div class="arch-option" data-value="B"><div class="arch-option-title">Option B</div><div class="arch-option-desc">One VNet, three subnets (web, app, db), each with its own NSG. Network segmentation with defense in depth.</div></div>
+                <div class="arch-option" data-value="C"><div class="arch-option-title">Option C</div><div class="arch-option-desc">Three separate VNets, one per tier. Maximum isolation, requires peering for communication.</div></div>
+              </div>
+              <div class="architect-reveal"><strong>Why this is the best choice</strong>Three subnets in one VNet gives you segmentation without peering complexity. The web subnet NSG allows inbound HTTP/HTTPS from the internet. The app subnet only allows traffic from the web subnet. The db subnet only allows traffic from the app subnet on the database port. This is classic defense-in-depth. Option A works but one flat subnet makes it easier to misconfigure. Option C adds unnecessary peering overhead since these tiers need to communicate constantly.</div>
+            </div>
+          </div>
+
+          <button class="reset-quiz-btn">&#8635; Reset All Answers</button>
         </div>
 
       </div><!-- /tab-container -->

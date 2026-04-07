@@ -63,6 +63,7 @@
           <button class="tab-btn active" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
+          <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
         <!-- ============ LAB TAB ============ -->
@@ -358,6 +359,99 @@ az deployment group create \
             </div>
           </div>
 
+        </div>
+
+        <!-- ==================== PROVE IT TAB ==================== -->
+        <div id="tab-prove" class="tab-content">
+          <div class="prove-intro">
+            <h2>Prove You Know It</h2>
+            <p>Not memorization — understanding. Can you apply what you learned to real situations?</p>
+            <div class="score-display">Scenarios: <span class="quiz-score">No questions answered yet</span></div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon scenario">?</span> Quick Scenarios</div>
+
+            <div class="quiz-card" data-qid="q1" data-answer="B">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You deployed a VM using an ARM template and need to deploy an identical one in another region. You have the template.json and parameters.json files. What's the fastest approach?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Manually create the VM in the portal matching every setting</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Edit the parameters file to change the region, then redeploy the template</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Export the existing VM as a new template</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>ARM templates are reusable by design. Changing parameters (region, name) and redeploying is exactly what they're built for — fast, consistent, repeatable.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Manually recreating (A) is slow and error-prone. Re-exporting (C) generates a new template that may include runtime-specific settings you don't need.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q2" data-answer="C">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>Your team uses ARM templates (JSON) but finds them verbose and hard to read. A colleague suggests switching to Bicep. What's the relationship between Bicep and ARM?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>Bicep is a completely different deployment system</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Bicep templates can't do everything ARM templates can</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Bicep compiles down to ARM JSON — it's syntactic sugar with full parity</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>Bicep is a domain-specific language that transpiles to standard ARM JSON. Everything you can do in ARM, you can do in Bicep. The compiled output IS an ARM template.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Bicep is NOT a separate system (A) — it's a layer on top of ARM. It has full parity (B) — you can even decompile JSON to Bicep with <code>az bicep decompile</code>.</div>
+              </div>
+            </div>
+
+            <div class="quiz-card" data-qid="q3" data-answer="A">
+              <div class="quiz-scenario">
+                <span class="scenario-label">Scenario</span>
+                <p>You're in Cloud Shell and need to deploy a template. You have both PowerShell and Bash available. Does it matter which you use?</p>
+              </div>
+              <div class="quiz-options">
+                <div class="quiz-option" data-value="A"><span class="option-letter">A</span><span>No — both can deploy ARM templates, just with different syntax</span></div>
+                <div class="quiz-option" data-value="B"><span class="option-letter">B</span><span>Yes — only PowerShell can deploy ARM templates</span></div>
+                <div class="quiz-option" data-value="C"><span class="option-letter">C</span><span>Yes — Bash is required for Bicep templates</span></div>
+              </div>
+              <div class="quiz-explanation">
+                <div class="explanation-box why-right"><strong>Why this is correct</strong>PowerShell uses <code>New-AzResourceGroupDeployment</code>, Bash uses <code>az deployment group create</code>. Both achieve the same result. Bicep works with both shells too.</div>
+                <div class="explanation-box why-wrong"><strong>Common mistakes</strong>Both shells can deploy ARM and Bicep templates (B, C). The choice is about syntax preference, not capability.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon troubleshoot">!</span> Troubleshooting Spot</div>
+
+            <div class="trouble-card">
+              <span class="trouble-label">Troubleshoot</span>
+              <p class="trouble-situation">You're deploying an ARM template and get the error: "The template parameter disk_name is not found." But you can see "disk_name" in your parameters file.</p>
+              <p class="trouble-question">What's going wrong?</p>
+              <div class="progressive-hints">
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 1</div><div class="prog-hint-content">ARM template parameter names are case-sensitive. Check if the template uses "disk_name" but your parameter file has "Disk_Name" or "diskName".</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Hint 2</div><div class="prog-hint-content">Check if you edited the template to rename parameters but forgot to update the parameters file (or vice versa).</div></div>
+                <div class="prog-hint"><div class="prog-hint-label"><span class="arrow">&#9654;</span> Answer</div><div class="prog-hint-content answer">Parameter names must match EXACTLY between template.json and parameters.json — including case and underscores. When you rename a parameter in the template, you must update it in the parameters file too. The error message tells you exactly which parameter it can't find.</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="assess-section">
+            <div class="assess-section-title"><span class="assess-icon architect">&#9670;</span> Architect's Corner</div>
+
+            <div class="architect-card" data-aid="a1" data-best="B">
+              <span class="architect-label">Design Decision</span>
+              <p class="architect-situation">Your team deploys infrastructure weekly. Currently everyone clicks through the portal. You want to introduce Infrastructure as Code. What's your first step?</p>
+              <div class="architect-options">
+                <div class="arch-option" data-value="A"><div class="arch-option-title">Option A</div><div class="arch-option-desc">Rewrite everything in Terraform immediately. Full IaC solution, steep learning curve, external tool.</div></div>
+                <div class="arch-option" data-value="B"><div class="arch-option-title">Option B</div><div class="arch-option-desc">Export existing resources as ARM templates, then iterate toward Bicep. Start from what you have, learn gradually.</div></div>
+                <div class="arch-option" data-value="C"><div class="arch-option-title">Option C</div><div class="arch-option-desc">Write PowerShell scripts that call az commands. Familiar syntax, imperative approach.</div></div>
+              </div>
+              <div class="architect-reveal"><strong>Why this is the best choice</strong>Exporting existing resources gives you working templates immediately — no blank-page problem. You can then clean them up, parameterize them, and gradually convert to Bicep for readability. Terraform (A) is powerful but introduces a new ecosystem and state management. PowerShell scripts (C) are imperative — they describe HOW, not WHAT, making them harder to maintain and not idempotent by default.</div>
+            </div>
+          </div>
+
+          <button class="reset-quiz-btn">&#8635; Reset All Answers</button>
         </div>
 
       </div><!-- /tab-container -->
