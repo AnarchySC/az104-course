@@ -59,14 +59,113 @@
     <div class="module-content">
       <div class="tab-container">
         <div class="tab-nav">
-          <button class="tab-btn active" data-tab="tab-lab">Lab</button>
+          <button class="tab-btn active" data-tab="tab-lesson">Lesson</button>
+          <button class="tab-btn" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
           <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
+        <!-- ==================== LESSON TAB ==================== -->
+        <div id="tab-lesson" class="tab-content active">
+
+          <div class="lesson-intro">
+            <h2>What You'll Learn</h2>
+            <p>Virtual machines are the workhorse of Azure compute. This module covers creating VMs, scaling them (up and out), managing disks, and using VM Scale Sets for automated scaling.</p>
+            <ul class="lesson-objectives">
+              <li>Deploy VMs across availability zones for high availability</li>
+              <li>Scale VMs vertically (resize) and horizontally (more instances)</li>
+              <li>Manage and change VM disks</li>
+              <li>Configure VM Scale Sets with autoscale rules</li>
+            </ul>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128421;</span>
+              <h3>VM Fundamentals</h3>
+            </div>
+            <div class="concept-body">
+              <p>When you create a VM, you choose four things:</p>
+              <ol>
+                <li><strong>Image</strong> &mdash; The operating system (Windows Server, Ubuntu, etc.)</li>
+                <li><strong>Size</strong> &mdash; CPU, RAM, disk speed (B-series burstable, D-series general, E-series memory-optimized)</li>
+                <li><strong>Region</strong> &mdash; Where the VM physically runs</li>
+                <li><strong>Networking</strong> &mdash; VNet, subnet, public IP, NSG</li>
+              </ol>
+              <p>A VM creates several sub-resources: a NIC (network interface), an OS disk, and optionally a public IP. These are separate resources that can be managed independently.</p>
+              <div class="info-box note">
+                <strong>Note:</strong> VM sizes determine your SLA, performance, and cost. B-series VMs are the cheapest but have variable CPU performance (they 'burst'). For production workloads, use D-series or higher.
+              </div>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#9989;</span>
+              <h3>Availability and SLA</h3>
+            </div>
+            <div class="concept-body">
+              <p>Azure guarantees different SLA levels depending on your architecture:</p>
+              <table class="compare-table">
+                <thead>
+                  <tr><th>Architecture</th><th>SLA</th><th>What it means</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Single VM (Premium SSD)</td><td>99.9%</td><td>Up to 8.76 hours downtime/year</td></tr>
+                  <tr><td>Availability Set</td><td>99.95%</td><td>Up to 4.38 hours downtime/year</td></tr>
+                  <tr><td>Availability Zones</td><td>99.99%</td><td>Up to 52.6 minutes downtime/year</td></tr>
+                </tbody>
+              </table>
+              <p><strong>Availability Set</strong> &mdash; VMs spread across fault domains (separate physical racks) and update domains (separate maintenance groups) within ONE datacenter.</p>
+              <p><strong>Availability Zones</strong> &mdash; VMs spread across physically separate datacenters within a region. Each zone has independent power, cooling, and networking.</p>
+              <div class="real-world">
+                <strong>Real-World:</strong> If your app needs high availability, deploy at least 2 VMs across Availability Zones with a Load Balancer. This gives you 99.99% SLA and protects against entire datacenter failures.
+              </div>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128200;</span>
+              <h3>Scaling</h3>
+            </div>
+            <div class="concept-body">
+              <p>Two types of scaling:</p>
+              <p><strong>Vertical scaling (scale up/down)</strong> &mdash; Change the VM size. More CPU, more RAM. Requires a restart. Good for predictable, steady growth.</p>
+              <p><strong>Horizontal scaling (scale out/in)</strong> &mdash; Add or remove VM instances. No downtime for existing VMs. Good for variable workloads.</p>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128736;</span>
+              <h3>VM Scale Sets</h3>
+            </div>
+            <div class="concept-body">
+              <p>A <strong>VM Scale Set</strong> (VMSS) is a group of identical VMs managed as a unit. Instead of creating VMs one by one, you define a template and Azure handles the rest.</p>
+              <p>Key features:</p>
+              <ul>
+                <li><strong>Autoscale</strong> &mdash; Automatically add/remove instances based on metrics (CPU, memory, queue length)</li>
+                <li><strong>Rolling upgrades</strong> &mdash; Update VMs without downtime</li>
+                <li><strong>Zone spanning</strong> &mdash; Spread instances across availability zones</li>
+              </ul>
+              <p>Autoscale rules have two parts:</p>
+              <ul>
+                <li><strong>Scale-out rule</strong>: When CPU &gt; 70% for 10 minutes &rarr; add 50% more instances</li>
+                <li><strong>Scale-in rule</strong>: When CPU &lt; 30% for 10 minutes &rarr; remove 50% of instances</li>
+                <li><strong>Cooldown period</strong>: Wait 5 minutes after scaling before evaluating again (prevents thrashing)</li>
+              </ul>
+              <div class="info-box warning">
+                <strong>Warning:</strong> Always configure BOTH scale-out AND scale-in rules. If you only configure scale-out, instances are added during load spikes but never removed &mdash; you'll pay for idle VMs forever.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
         <!-- ==================== LAB TAB ==================== -->
-        <div id="tab-lab" class="tab-content active">
+        <div id="tab-lab" class="tab-content">
 
           <h2 style="margin-bottom: 8px;">Lab 08 &mdash; Manage Virtual Machines</h2>
           <p style="color: var(--text-muted); margin-bottom: 32px;">Estimated time: 50 minutes</p>

@@ -59,14 +59,112 @@
     <div class="module-content">
       <div class="tab-container">
         <div class="tab-nav">
-          <button class="tab-btn active" data-tab="tab-lab">Lab</button>
+          <button class="tab-btn active" data-tab="tab-lesson">Lesson</button>
+          <button class="tab-btn" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
           <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
+        <!-- ==================== LESSON TAB ==================== -->
+        <div id="tab-lesson" class="tab-content active">
+
+          <div class="lesson-intro">
+            <h2>What You'll Learn</h2>
+            <p>Azure Storage is one of the most used services in Azure. This module covers storage accounts, blob storage, file shares, security mechanisms, and how to optimize cost through lifecycle management.</p>
+            <ul class="lesson-objectives">
+              <li>Create and configure storage accounts with appropriate redundancy</li>
+              <li>Work with blob containers and understand access tiers</li>
+              <li>Secure storage with SAS tokens, firewalls, and service endpoints</li>
+              <li>Configure Azure Files for shared file storage</li>
+            </ul>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128451;</span>
+              <h3>Storage Accounts</h3>
+            </div>
+            <div class="concept-body">
+              <p>A <strong>storage account</strong> is a container for all your Azure Storage data. It provides a unique namespace accessible from anywhere via HTTP/HTTPS.</p>
+              <p>The key decision at creation: <strong>redundancy</strong> &mdash; how many copies of your data exist and where.</p>
+              <table class="compare-table">
+                <thead>
+                  <tr><th>Redundancy</th><th>Copies</th><th>Geographic</th><th>Read Access</th><th>Use Case</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>LRS</td><td>3 copies, 1 datacenter</td><td>No</td><td>N/A</td><td>Dev/test, non-critical</td></tr>
+                  <tr><td>ZRS</td><td>3 copies, 3 zones</td><td>No</td><td>N/A</td><td>High availability, same region</td></tr>
+                  <tr><td>GRS</td><td>6 copies, 2 regions</td><td>Yes</td><td>No (failover only)</td><td>Disaster recovery</td></tr>
+                  <tr><td>RA-GRS</td><td>6 copies, 2 regions</td><td>Yes</td><td>Yes (read secondary)</td><td>Mission-critical</td></tr>
+                </tbody>
+              </table>
+              <div class="real-world">
+                <strong>Real-World:</strong> For production data you can't afford to lose, use at least GRS. For data you can recreate (build artifacts, caches), LRS is fine and much cheaper.
+              </div>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128230;</span>
+              <h3>Blob Storage and Access Tiers</h3>
+            </div>
+            <div class="concept-body">
+              <p><strong>Blob storage</strong> is for unstructured data &mdash; files, images, videos, backups, logs. Blobs live in <strong>containers</strong> (like folders).</p>
+              <p>Three <strong>access tiers</strong> optimize cost based on how often you access the data:</p>
+              <ul>
+                <li><strong>Hot</strong> &mdash; Frequently accessed. Highest storage cost, lowest access cost.</li>
+                <li><strong>Cool</strong> &mdash; Infrequently accessed (30+ days). Lower storage cost, higher access cost.</li>
+                <li><strong>Archive</strong> &mdash; Rarely accessed (180+ days). Cheapest storage, but retrieval takes hours and costs the most.</li>
+              </ul>
+              <p><strong>Lifecycle management</strong> automates tier transitions. Example: move to Cool after 30 days, Archive after 90, delete after 365.</p>
+              <p><strong>Immutable storage</strong> (WORM) prevents data from being modified or deleted for a set period. Used for compliance &mdash; financial records, legal holds, healthcare data.</p>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128274;</span>
+              <h3>Securing Storage</h3>
+            </div>
+            <div class="concept-body">
+              <p>Three ways to authenticate to storage:</p>
+              <ol>
+                <li><strong>Access keys</strong> &mdash; Two 512-bit keys that grant FULL access to the entire storage account. Like a master key. Never share these.</li>
+                <li><strong>SAS tokens</strong> &mdash; Shared Access Signatures. Time-limited, permission-scoped, can be restricted to specific resources. The right choice for temporary access.</li>
+                <li><strong>Entra ID (RBAC)</strong> &mdash; Role-based access using Azure identities. Most secure, auditable, no keys to manage.</li>
+              </ol>
+              <p>Beyond authentication, you can restrict WHERE traffic comes from:</p>
+              <ul>
+                <li><strong>Firewall rules</strong> &mdash; Allow only specific IP addresses</li>
+                <li><strong>Service endpoints</strong> &mdash; Allow only traffic from specific VNets</li>
+                <li><strong>Private endpoints</strong> &mdash; Give the storage account a private IP inside your VNet (most secure)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128193;</span>
+              <h3>Azure Files</h3>
+            </div>
+            <div class="concept-body">
+              <p>Azure Files provides fully managed <strong>SMB file shares</strong> in the cloud. They work exactly like on-premises network drives &mdash; you can mount them from Windows, Linux, or macOS.</p>
+              <p>Use cases: shared configuration files, lift-and-shift of on-premises file servers, persistent storage for containers.</p>
+              <p>Key differences from Blob:</p>
+              <ul>
+                <li>Files supports SMB protocol (mount as drive letter)</li>
+                <li>Blob is for object storage (access via REST API or SDK)</li>
+                <li>Files supports snapshots for point-in-time recovery</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+
         <!-- ==================== LAB TAB ==================== -->
-        <div id="tab-lab" class="tab-content active">
+        <div id="tab-lab" class="tab-content">
 
           <h2 style="margin-bottom: 8px;">Lab 07 &mdash; Manage Azure Storage</h2>
           <p style="color: var(--text-muted); margin-bottom: 32px;">Estimated time: 50 minutes</p>

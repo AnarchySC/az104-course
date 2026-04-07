@@ -60,14 +60,117 @@
 
       <div class="tab-container">
         <div class="tab-nav">
-          <button class="tab-btn active" data-tab="tab-lab">Lab</button>
+          <button class="tab-btn active" data-tab="tab-lesson">Lesson</button>
+          <button class="tab-btn" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
           <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
+        <!-- ============ LESSON TAB ============ -->
+        <div id="tab-lesson" class="tab-content active">
+
+          <div class="lesson-intro">
+            <h2>What You'll Learn</h2>
+            <p>This module is about automating resource deployment. Instead of clicking through the portal every time, you'll use templates to define infrastructure as code — repeatable, consistent, and version-controlled.</p>
+            <ul class="lesson-objectives">
+              <li>Understand what ARM templates are and why they matter</li>
+              <li>Read and modify JSON template and parameter files</li>
+              <li>Deploy templates via the portal, PowerShell, and Azure CLI</li>
+              <li>Understand Bicep as a friendlier alternative to JSON</li>
+            </ul>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128187;</span>
+              <h3>Why Infrastructure as Code?</h3>
+            </div>
+            <div class="concept-body">
+              <p>Clicking through the Azure portal works for learning, but it's terrible for production:</p>
+              <ul>
+                <li><strong>Not repeatable</strong> — Can you recreate your exact setup after someone deletes it?</li>
+                <li><strong>Not auditable</strong> — Who changed what, and when?</li>
+                <li><strong>Error-prone</strong> — Miss one checkbox and your VM is misconfigured</li>
+                <li><strong>Slow</strong> — Deploying 20 resources by hand takes hours</li>
+              </ul>
+              <p><strong>Infrastructure as Code (IaC)</strong> means defining your infrastructure in files. You describe WHAT you want (a VM with these specs, a network with these subnets) and Azure creates it. The same file always produces the same result.</p>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128196;</span>
+              <h3>ARM Templates</h3>
+            </div>
+            <div class="concept-body">
+              <p>Azure Resource Manager (ARM) templates are JSON files that define Azure resources. Every ARM template has this structure:</p>
+              <div class="code-block">
+                <span class="lang-tag">JSON</span>
+{
+  "$schema": "...",
+  "contentVersion": "1.0.0.0",
+  "parameters": { },
+  "variables": { },
+  "resources": [ ],
+  "outputs": { }
+}</div>
+              <p>The <strong>parameters file</strong> is separate — it contains the values for each deployment. Same template, different parameters = different environments (dev, staging, prod).</p>
+              <div class="real-world">You can export a template from ANY existing Azure resource. This is a great way to learn — create something in the portal, export it, then study the JSON.</div>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128640;</span>
+              <h3>Deployment Methods</h3>
+            </div>
+            <div class="concept-body">
+              <p>You can deploy ARM templates three ways:</p>
+              <table class="compare-table">
+                <thead>
+                  <tr><th>Method</th><th>Command</th><th>Best for</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Portal</td><td>Upload template → Deploy</td><td>One-off deployments, learning</td></tr>
+                  <tr><td>PowerShell</td><td>New-AzResourceGroupDeployment</td><td>Windows admins, scripting</td></tr>
+                  <tr><td>Azure CLI</td><td>az deployment group create</td><td>Cross-platform, Bash users</td></tr>
+                </tbody>
+              </table>
+              <p>All three produce the exact same result. The portal is visual but manual. PowerShell and CLI can be scripted and automated.</p>
+              <p><strong>Cloud Shell</strong> gives you both PowerShell and Bash directly in the browser — no local installation needed.</p>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#9889;</span>
+              <h3>Bicep — ARM Made Readable</h3>
+            </div>
+            <div class="concept-body">
+              <p>Bicep is Microsoft's answer to "ARM templates are too verbose." It's a domain-specific language that <strong>compiles to ARM JSON</strong>. Everything you can do in ARM, you can do in Bicep.</p>
+              <p>ARM JSON (verbose):</p>
+              <div class="code-block">
+                <span class="lang-tag">JSON</span>
+{"type": "Microsoft.Compute/disks", "apiVersion": "2021-04-01",
+ "name": "[parameters('diskName')]", "location": "[parameters('location')]",
+ "properties": {"diskSizeGB": 32}}</div>
+              <p>Bicep (clean):</p>
+              <div class="code-block">
+                <span class="lang-tag">Bicep</span>
+resource disk 'Microsoft.Compute/disks@2021-04-01' = {
+  name: diskName
+  location: location
+  properties: { diskSizeGB: 32 }
+}</div>
+              <p>You can convert between them: <code>az bicep decompile</code> (JSON → Bicep) and <code>az bicep build</code> (Bicep → JSON).</p>
+            </div>
+          </div>
+
+        </div>
+
         <!-- ============ LAB TAB ============ -->
-        <div id="tab-lab" class="tab-content active">
+        <div id="tab-lab" class="tab-content">
 
           <h2 style="font-size:1.4rem; font-weight:700; margin-bottom:8px;">Lab 03 - Manage Azure Resources by Using ARM Templates</h2>
           <p style="color:var(--text-muted); margin-bottom:32px;">Estimated time: 50 minutes</p>

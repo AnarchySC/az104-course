@@ -56,14 +56,114 @@
     <div class="module-content">
       <div class="tab-container">
         <div class="tab-nav">
-          <button class="tab-btn active" data-tab="tab-lab">Lab</button>
+          <button class="tab-btn active" data-tab="tab-lesson">Lesson</button>
+          <button class="tab-btn" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
           <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
+        <!-- ==================== LESSON TAB ==================== -->
+        <div id="tab-lesson" class="tab-content active">
+
+          <div class="lesson-intro">
+            <h2>What You'll Learn</h2>
+            <p>Governance is about keeping your Azure environment under control — who can do what, where resources can live, and how you organize everything. This module covers management groups, RBAC, Azure Policy, tags, and resource locks.</p>
+            <ul class="lesson-objectives">
+              <li>Understand the Azure resource hierarchy (management groups → subscriptions → resource groups → resources)</li>
+              <li>Assign and create RBAC roles for least-privilege access</li>
+              <li>Use Azure Policy to enforce organizational standards</li>
+              <li>Apply tags and resource locks for governance</li>
+            </ul>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#127970;</span>
+              <h3>The Azure Resource Hierarchy</h3>
+            </div>
+            <div class="concept-body">
+              <p>Azure organizes resources in a hierarchy. Understanding this is critical because <strong>permissions and policies flow downward</strong>:</p>
+              <div class="diagram-box">
+<pre>Management Groups
+  └── Subscriptions
+        └── Resource Groups
+              └── Resources (VMs, Storage, etc.)</pre>
+              </div>
+              <ul>
+                <li><strong>Management Groups</strong> — Containers for subscriptions. Let you apply policy and RBAC across multiple subscriptions at once.</li>
+                <li><strong>Subscriptions</strong> — Billing boundaries. Each subscription gets a separate bill.</li>
+                <li><strong>Resource Groups</strong> — Logical containers for related resources. A resource group is NOT a security boundary by default — it's for organization.</li>
+                <li><strong>Resources</strong> — The actual things (VMs, databases, storage accounts).</li>
+              </ul>
+              <p>Key rule: Permissions assigned at a higher level are <strong>inherited</strong> by everything below. Give someone Reader on a subscription? They can read every resource in every resource group in that subscription.</p>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128274;</span>
+              <h3>Role-Based Access Control (RBAC)</h3>
+            </div>
+            <div class="concept-body">
+              <p>RBAC answers the question: <strong>"Who can do what, and where?"</strong></p>
+              <p>Three built-in roles cover most needs:</p>
+              <ul>
+                <li><strong>Owner</strong> — Full access + can assign roles to others</li>
+                <li><strong>Contributor</strong> — Full access EXCEPT assigning roles</li>
+                <li><strong>Reader</strong> — View only, can't change anything</li>
+              </ul>
+              <p>Beyond these, there are 100+ specialized roles like <span class="key-term">Virtual Machine Contributor</span> (manage VMs only) and <span class="key-term">Storage Blob Data Reader</span> (read blobs only).</p>
+              <p><strong>Best practice:</strong> Always assign roles to <strong>groups</strong>, not individual users. When someone joins or leaves, you just update group membership — no need to touch role assignments.</p>
+              <div class="info-box important"><strong>Important:</strong> Owner role does NOT bypass Azure Policy. Even an Owner can't create a resource that violates an active policy. This is by design — Policy is pre-deployment enforcement.</div>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128220;</span>
+              <h3>Azure Policy</h3>
+            </div>
+            <div class="concept-body">
+              <p>Azure Policy enforces rules on your resources. It answers: <strong>"What is allowed in this environment?"</strong></p>
+              <p>How it works:</p>
+              <ol>
+                <li>A <strong>Policy Definition</strong> describes what to check and what to do (written in JSON)</li>
+                <li>You create a <strong>Policy Assignment</strong> that applies the definition to a scope (management group, subscription, or resource group)</li>
+                <li>Azure evaluates every resource operation against active policies</li>
+                <li>Non-compliant operations are denied, flagged, or auto-remediated</li>
+              </ol>
+              <p>Common built-in policies:</p>
+              <ul>
+                <li>"Allowed locations" — Restrict where resources can be deployed</li>
+                <li>"Require a tag and its value" — Force tagging on new resources</li>
+                <li>"Allowed virtual machine SKUs" — Restrict VM sizes</li>
+              </ul>
+              <div class="real-world">Policy is your first line of defense. Before a resource is even created, Policy checks if it's allowed. RBAC controls WHO can act. Policy controls WHAT actions are allowed. Locks prevent accidental destruction AFTER resources exist.</div>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#127991;</span>
+              <h3>Tags and Resource Locks</h3>
+            </div>
+            <div class="concept-body">
+              <p><strong>Tags</strong> are key-value pairs you attach to resources for organization. They're metadata — they don't affect how resources work, but they're essential for cost management, automation, and compliance.</p>
+              <p>Common tags: <span class="key-term">Environment: Production</span>, <span class="key-term">CostCenter: 12345</span>, <span class="key-term">Owner: jane@company.com</span></p>
+              <p><strong>Resource Locks</strong> prevent accidental changes:</p>
+              <ul>
+                <li><strong>Delete lock</strong> — Resources can be modified but not deleted</li>
+                <li><strong>Read-only lock</strong> — Resources can't be modified OR deleted</li>
+              </ul>
+              <p>Locks are inherited. A lock on a resource group applies to all resources inside it. Even Owners can't bypass a lock — you must remove the lock first, then delete.</p>
+            </div>
+          </div>
+
+        </div>
+
         <!-- ==================== LAB TAB ==================== -->
-        <div id="tab-lab" class="tab-content active">
+        <div id="tab-lab" class="tab-content">
 
           <h2 style="font-size:1.4rem; font-weight:700; margin-bottom:8px;">Lab 02a - Manage Subscriptions and RBAC</h2>
           <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:32px;">Estimated time: 20 minutes</p>

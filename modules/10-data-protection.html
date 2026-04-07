@@ -59,14 +59,116 @@
     <div class="module-content">
       <div class="tab-container">
         <div class="tab-nav">
-          <button class="tab-btn active" data-tab="tab-lab">Lab</button>
+          <button class="tab-btn active" data-tab="tab-lesson">Lesson</button>
+          <button class="tab-btn" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
           <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
+        <!-- ==================== LESSON TAB ==================== -->
+        <div id="tab-lesson" class="tab-content active">
+
+          <div class="lesson-intro">
+            <h2>What You'll Learn</h2>
+            <p>Data protection ensures you can recover from disasters, accidental deletions, and data corruption. This module covers Azure Backup for regular backups and Azure Site Recovery for disaster recovery replication.</p>
+            <ul class="lesson-objectives">
+              <li>Understand the difference between backup and disaster recovery</li>
+              <li>Create and configure Recovery Services vaults</li>
+              <li>Set up backup policies for VMs and file shares</li>
+              <li>Configure Azure Site Recovery for cross-region replication</li>
+            </ul>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128737;</span>
+              <h3>Backup vs Disaster Recovery</h3>
+            </div>
+            <div class="concept-body">
+              <p>These are related but different:</p>
+              <p><strong>Backup</strong> &mdash; Take periodic snapshots of your data. If something goes wrong (accidental deletion, corruption, ransomware), restore from a backup. Recovery time: minutes to hours.</p>
+              <p><strong>Disaster Recovery (DR)</strong> &mdash; Continuously replicate your entire environment to another region. If a region goes down, fail over to the replica. Recovery time: minutes.</p>
+              <table class="compare-table">
+                <thead>
+                  <tr><th>Aspect</th><th>Azure Backup</th><th>Azure Site Recovery</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Purpose</td><td>Data recovery</td><td>Business continuity</td></tr>
+                  <tr><td>Frequency</td><td>Scheduled (daily, hourly)</td><td>Continuous replication</td></tr>
+                  <tr><td>RPO</td><td>Hours (since last backup)</td><td>Minutes (near real-time)</td></tr>
+                  <tr><td>RTO</td><td>Minutes to hours</td><td>Minutes</td></tr>
+                  <tr><td>Scope</td><td>Individual resources</td><td>Entire workloads</td></tr>
+                  <tr><td>Cost</td><td>Lower</td><td>Higher</td></tr>
+                </tbody>
+              </table>
+              <p><span class="key-term">RPO</span> = Recovery Point Objective (how much data can you afford to lose). <span class="key-term">RTO</span> = Recovery Time Objective (how fast must you recover).</p>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#127974;</span>
+              <h3>Recovery Services Vaults</h3>
+            </div>
+            <div class="concept-body">
+              <p>A <strong>Recovery Services vault</strong> is the storage container for all your backup data and replication metadata. It's the central management point for data protection.</p>
+              <p><strong>Critical rules:</strong></p>
+              <ul>
+                <li>The vault must be in the <strong>same region</strong> as the resources it backs up</li>
+                <li>For disaster recovery, you create a second vault in the <strong>target region</strong></li>
+                <li>Vaults support <strong>soft delete</strong> (14 days) &mdash; protects against accidental or malicious backup deletion</li>
+                <li>Vault redundancy (LRS, GRS) determines where backup data is stored</li>
+              </ul>
+              <div class="real-world">Always use GRS for production backup vaults. If your primary region goes down, your backups are safe in the secondary region. LRS is fine only for dev/test.</div>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128197;</span>
+              <h3>Backup Policies</h3>
+            </div>
+            <div class="concept-body">
+              <p>A backup policy defines WHEN and HOW LONG to keep backups:</p>
+              <ul>
+                <li><strong>Schedule</strong> &mdash; When to back up (daily at midnight, every 4 hours, etc.)</li>
+                <li><strong>Retention</strong> &mdash; How long to keep each backup (daily: 30 days, weekly: 12 weeks, monthly: 12 months, yearly: 10 years)</li>
+                <li><strong>Instant restore</strong> &mdash; Keep snapshots locally for fast recovery (1&ndash;5 days)</li>
+              </ul>
+              <p><strong>Azure Backup supports:</strong></p>
+              <ul>
+                <li>Azure VMs (full VM backup)</li>
+                <li>Azure Files (file share snapshots)</li>
+                <li>SQL Server in Azure VMs</li>
+                <li>Azure Blob Storage</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128260;</span>
+              <h3>Azure Site Recovery (ASR)</h3>
+            </div>
+            <div class="concept-body">
+              <p>ASR continuously replicates VM disks to a secondary Azure region. If the primary region fails, you "fail over" &mdash; ASR creates running VMs from the replicated disks in the target region.</p>
+              <p><strong>How it works:</strong></p>
+              <ol>
+                <li>Enable replication on a VM &rarr; ASR installs the Mobility agent</li>
+                <li>Disk writes are continuously replicated to cache storage in the source region</li>
+                <li>Data is sent to managed disks in the target region</li>
+                <li>Recovery points are created every few minutes</li>
+                <li>During failover, Azure provisions VMs from the latest recovery point</li>
+              </ol>
+              <div class="info-box warning"><strong>Warning:</strong> ASR replicates at the DISK level. For databases, this can result in inconsistent state (partial transactions). Always use database-native replication (SQL Always On, Azure SQL geo-replication) for the data tier alongside ASR for compute.</div>
+            </div>
+          </div>
+
+        </div>
+
         <!-- ==================== LAB TAB ==================== -->
-        <div id="tab-lab" class="tab-content active">
+        <div id="tab-lab" class="tab-content">
 
           <h2 style="margin-bottom: 8px;">Lab 10 &mdash; Implement Data Protection</h2>
           <p style="color: var(--text-muted); margin-bottom: 32px;">Estimated time: 50 minutes</p>

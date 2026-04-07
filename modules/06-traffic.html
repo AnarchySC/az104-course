@@ -59,14 +59,101 @@
     <div class="module-content">
       <div class="tab-container">
         <div class="tab-nav">
-          <button class="tab-btn active" data-tab="tab-lab">Lab</button>
+          <button class="tab-btn active" data-tab="tab-lesson">Lesson</button>
+          <button class="tab-btn" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
           <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
+        <!-- ==================== LESSON TAB ==================== -->
+        <div id="tab-lesson" class="tab-content active">
+
+          <div class="lesson-intro">
+            <h2>What You'll Learn</h2>
+            <p>When your app runs on multiple VMs, you need to distribute traffic between them. This module covers Azure's two main traffic distribution services: Load Balancer (Layer 4) and Application Gateway (Layer 7).</p>
+            <ul class="lesson-objectives">
+              <li>Understand the difference between L4 and L7 load balancing</li>
+              <li>Configure Azure Load Balancer with frontend, backend pool, and health probes</li>
+              <li>Configure Application Gateway with path-based routing</li>
+              <li>Know when to use each service</li>
+            </ul>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128209;</span>
+              <h3>Layer 4 vs Layer 7</h3>
+            </div>
+            <div class="concept-body">
+              <p>Network traffic operates in layers. The two that matter here:</p>
+              <p><strong>Layer 4 (Transport)</strong> &mdash; TCP and UDP. The load balancer sees IP addresses and port numbers, but NOT the content of the request. It can't tell the difference between a request for <span class="key-term">/images/cat.jpg</span> and <span class="key-term">/api/users</span>.</p>
+              <p><strong>Layer 7 (Application)</strong> &mdash; HTTP/HTTPS. The load balancer can inspect URLs, headers, cookies, and route based on the actual content of the request.</p>
+              <table class="compare-table">
+                <thead>
+                  <tr><th>Feature</th><th>Load Balancer (L4)</th><th>Application Gateway (L7)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>OSI Layer</td><td>4 (Transport)</td><td>7 (Application)</td></tr>
+                  <tr><td>Protocols</td><td>TCP, UDP</td><td>HTTP, HTTPS, WebSocket</td></tr>
+                  <tr><td>Routing</td><td>IP + Port only</td><td>URL path, host header, cookies</td></tr>
+                  <tr><td>SSL termination</td><td>No</td><td>Yes</td></tr>
+                  <tr><td>WAF</td><td>No</td><td>Optional (WAF tier)</td></tr>
+                  <tr><td>Performance</td><td>Ultra-fast (no inspection)</td><td>Slightly slower (inspects content)</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#9878;</span>
+              <h3>Azure Load Balancer</h3>
+            </div>
+            <div class="concept-body">
+              <p>Azure Load Balancer distributes incoming traffic across a pool of backend VMs. It has four components:</p>
+              <ol>
+                <li><strong>Frontend IP</strong> &mdash; The public or private IP that receives traffic</li>
+                <li><strong>Backend Pool</strong> &mdash; The VMs that handle the traffic</li>
+                <li><strong>Health Probe</strong> &mdash; Checks if each VM is alive (TCP or HTTP)</li>
+                <li><strong>Load Balancing Rule</strong> &mdash; Maps a frontend port to a backend port</li>
+              </ol>
+              <p>Important: Standard SKU Load Balancers <strong>block all traffic by default</strong>. You MUST have NSG rules that explicitly allow traffic, unlike Basic SKU which allows everything.</p>
+              <div class="real-world">
+                <strong>Real-World:</strong> Use Standard SKU for production. Basic is being retired and doesn't support Availability Zones, multiple frontend IPs, or SLA guarantees.
+              </div>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128295;</span>
+              <h3>Azure Application Gateway</h3>
+            </div>
+            <div class="concept-body">
+              <p>Application Gateway is a Layer 7 load balancer designed for web applications. Its killer features:</p>
+              <p><strong>Path-based routing:</strong> Send <span class="key-term">/api/*</span> requests to API servers and <span class="key-term">/images/*</span> to image servers &mdash; from the same frontend IP.</p>
+              <p><strong>SSL termination:</strong> HTTPS traffic is decrypted at the gateway, so backend servers only handle HTTP (simpler, faster).</p>
+              <p><strong>WAF (Web Application Firewall):</strong> The WAF tier adds protection against SQL injection, XSS, and other OWASP top-10 attacks.</p>
+              <p>Requirements:</p>
+              <ul>
+                <li>Needs its own <strong>dedicated subnet</strong> (/27 or larger)</li>
+                <li>Supports autoscaling (Standard V2 tier)</li>
+                <li>Supports multiple backend pools with different routing rules</li>
+              </ul>
+              <div class="diagram-box">
+<pre>Users &rarr; [App Gateway :80/:443]
+         &boxur;&boxh;&boxh; /api/*    &rarr; Backend Pool: API Servers
+         &boxur;&boxh;&boxh; /images/* &rarr; Backend Pool: Image Servers
+         &boxur;&boxh;&boxh; /*        &rarr; Backend Pool: Web Servers</pre>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
         <!-- ==================== LAB TAB ==================== -->
-        <div id="tab-lab" class="tab-content active">
+        <div id="tab-lab" class="tab-content">
 
           <h2 style="margin-bottom: 8px;">Lab 06 &mdash; Implement Network Traffic Management</h2>
           <p style="color: var(--text-muted); margin-bottom: 32px;">Estimated time: 50 minutes</p>

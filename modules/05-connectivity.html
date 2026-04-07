@@ -59,14 +59,101 @@
     <div class="module-content">
       <div class="tab-container">
         <div class="tab-nav">
-          <button class="tab-btn active" data-tab="tab-lab">Lab</button>
+          <button class="tab-btn active" data-tab="tab-lesson">Lesson</button>
+          <button class="tab-btn" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
           <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
+        <!-- ==================== LESSON TAB ==================== -->
+        <div id="tab-lesson" class="tab-content active">
+
+          <div class="lesson-intro">
+            <h2>What You'll Learn</h2>
+            <p>When your Azure resources live in separate virtual networks, they can't talk to each other by default. This module teaches you how to connect VNets using peering, verify connectivity with Network Watcher, and control traffic flow with custom routes.</p>
+            <ul class="lesson-objectives">
+              <li>Understand why VNets are isolated by default</li>
+              <li>Configure VNet peering for cross-network communication</li>
+              <li>Use Network Watcher to diagnose connectivity issues</li>
+              <li>Create user-defined routes to control traffic paths</li>
+            </ul>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128279;</span>
+              <h3>VNet Isolation and Peering</h3>
+            </div>
+            <div class="concept-body">
+              <p>By default, VNets are completely isolated &mdash; even if they're in the same subscription, region, and resource group. A VM in VNet-A cannot reach a VM in VNet-B without explicit configuration.</p>
+              <p><strong>VNet Peering</strong> creates a direct connection between two VNets using Microsoft's backbone network (not the public internet). Traffic between peered VNets is private, low-latency, and high-bandwidth.</p>
+              <p>Two types:</p>
+              <ul>
+                <li><strong>Regional peering</strong> &mdash; VNets in the same Azure region</li>
+                <li><strong>Global peering</strong> &mdash; VNets in different regions (slightly higher latency)</li>
+              </ul>
+              <p>Critical rules:</p>
+              <ul>
+                <li>Peering is <strong>non-transitive</strong>. If A peers with B, and B peers with C, A CANNOT reach C through B.</li>
+                <li>Address spaces must NOT overlap</li>
+                <li>Peering must be created from BOTH sides &mdash; it's a two-step process</li>
+                <li>Both sides must show "Connected" status before traffic flows</li>
+              </ul>
+              <div class="diagram-box">
+<pre> VNet-A &lt;──peer──&gt; VNet-B &lt;──peer──&gt; VNet-C
+   &uarr;                                    &uarr;
+   &larr;── Cannot reach each other ────────&rarr;
+        (peering is non-transitive)</pre>
+              </div>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128065;</span>
+              <h3>Network Watcher</h3>
+            </div>
+            <div class="concept-body">
+              <p>Network Watcher is Azure's built-in network diagnostic toolkit. The key tool is <strong>Connection Troubleshoot</strong> &mdash; it tests whether one VM can reach another on a specific port and shows you exactly where traffic is blocked.</p>
+              <p>What it checks:</p>
+              <ul>
+                <li>Network path between source and destination</li>
+                <li>NSG rules at every hop</li>
+                <li>Route tables and system routes</li>
+                <li>Whether the destination port is listening</li>
+              </ul>
+              <div class="real-world">
+                <strong>Real-World:</strong> Before troubleshooting complex network issues manually, always run Connection Troubleshoot first. It often pinpoints the exact NSG rule or missing route that's blocking traffic in seconds.
+              </div>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128739;</span>
+              <h3>User-Defined Routes (UDRs)</h3>
+            </div>
+            <div class="concept-body">
+              <p>Azure automatically creates <strong>system routes</strong> so VNets, subnets, and the internet can communicate. You can override these with <strong>User-Defined Routes</strong> in a route table.</p>
+              <p>Common use case: Force all outbound traffic through a firewall/NVA (Network Virtual Appliance) for inspection.</p>
+              <p>How it works:</p>
+              <ol>
+                <li>Create a <strong>Route Table</strong></li>
+                <li>Add <strong>routes</strong> (destination prefix &rarr; next hop type + address)</li>
+                <li><strong>Associate</strong> the route table with a subnet</li>
+              </ol>
+              <p>Next hop types: Virtual network gateway, Virtual network, Internet, Virtual appliance (specific IP), None (drop traffic)</p>
+              <div class="info-box note">
+                <strong>Important:</strong> A route table does NOTHING until you associate it with a subnet. Creating it and adding routes isn't enough.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
         <!-- ==================== LAB TAB ==================== -->
-        <div id="tab-lab" class="tab-content active">
+        <div id="tab-lab" class="tab-content">
 
           <h2 style="margin-bottom: 8px;">Lab 05 &mdash; Implement Intersite Connectivity</h2>
           <p style="color: var(--text-muted); margin-bottom: 32px;">Estimated time: 50 minutes</p>

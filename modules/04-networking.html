@@ -59,14 +59,108 @@
     <div class="module-content">
       <div class="tab-container">
         <div class="tab-nav">
-          <button class="tab-btn active" data-tab="tab-lab">Lab</button>
+          <button class="tab-btn active" data-tab="tab-lesson">Lesson</button>
+          <button class="tab-btn" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
           <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
+        <!-- ==================== LESSON TAB ==================== -->
+        <div id="tab-lesson" class="tab-content active">
+
+          <div class="lesson-intro">
+            <h2>What You'll Learn</h2>
+            <p>Virtual networking is the foundation of Azure infrastructure. Every VM, database, and app service communicates over a network. This module teaches you how to build, segment, and secure Azure networks.</p>
+            <ul class="lesson-objectives">
+              <li>Create virtual networks and subnets with proper IP planning</li>
+              <li>Understand and configure Network Security Groups (NSGs)</li>
+              <li>Use Application Security Groups (ASGs) for logical grouping</li>
+              <li>Configure public and private DNS zones</li>
+            </ul>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#127760;</span>
+              <h3>Virtual Networks and Subnets</h3>
+            </div>
+            <div class="concept-body">
+              <p>A <strong>Virtual Network (VNet)</strong> is your private network in Azure. It's an isolated section of the Azure cloud where you deploy resources. Nothing can communicate with your VNet unless you explicitly allow it.</p>
+              <p>Every VNet has an <strong>address space</strong> — a range of private IP addresses (like 10.0.0.0/16). Within that, you create <strong>subnets</strong> — smaller ranges that segment your network.</p>
+              <div class="diagram-box">
+<pre>VNet: 10.0.0.0/16 (65,536 addresses)
+├── Web Subnet:  10.0.1.0/24 (251 usable)
+├── App Subnet:  10.0.2.0/24 (251 usable)
+└── DB Subnet:   10.0.3.0/24 (251 usable)</pre>
+              </div>
+              <p>Critical rules:</p>
+              <ul>
+                <li>VNet address spaces MUST NOT overlap if you plan to peer them</li>
+                <li>Azure reserves 5 addresses per subnet (first 4 + last 1)</li>
+                <li>A /24 gives 251 usable addresses, not 256</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128737;</span>
+              <h3>Network Security Groups (NSGs)</h3>
+            </div>
+            <div class="concept-body">
+              <p>NSGs are Azure's built-in firewall. They contain <strong>rules</strong> that allow or deny traffic based on source, destination, port, and protocol.</p>
+              <p>Key concepts:</p>
+              <ul>
+                <li>Rules have a <strong>priority</strong> (100-4096). Lower number = higher priority.</li>
+                <li>Rules are evaluated in priority order. <strong>First match wins.</strong></li>
+                <li>NSGs can be attached to <strong>subnets</strong> OR <strong>network interfaces</strong> (NICs). If both exist, traffic must pass BOTH.</li>
+                <li>Default rules (priority 65000+) allow VNet-to-VNet traffic and deny inbound from the internet.</li>
+              </ul>
+              <table class="compare-table">
+                <thead>
+                  <tr><th>Priority</th><th>Name</th><th>Direction</th><th>Action</th><th>Port</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>100</td><td>AllowSSH</td><td>Inbound</td><td>Allow</td><td>22</td></tr>
+                  <tr><td>200</td><td>AllowHTTP</td><td>Inbound</td><td>Allow</td><td>80,443</td></tr>
+                  <tr><td>4096</td><td>DenyAll</td><td>Inbound</td><td>Deny</td><td>*</td></tr>
+                  <tr><td>65000</td><td>AllowVNet</td><td>Inbound</td><td>Allow</td><td>*</td></tr>
+                </tbody>
+              </table>
+              <p>In this example: SSH and HTTP are allowed. Everything else is denied by rule 4096 BEFORE the default AllowVNet rule at 65000 is reached.</p>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128230;</span>
+              <h3>Application Security Groups (ASGs)</h3>
+            </div>
+            <div class="concept-body">
+              <p>ASGs let you group VMs logically (like "web servers" or "database servers") and use those groups in NSG rules instead of IP addresses.</p>
+              <p>Without ASGs: "Allow traffic from 10.0.1.4, 10.0.1.5, 10.0.1.6 to port 80" — breaks when IPs change.</p>
+              <p>With ASGs: "Allow traffic from ASG-WebServers to port 80" — works regardless of IP changes.</p>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128209;</span>
+              <h3>Azure DNS</h3>
+            </div>
+            <div class="concept-body">
+              <p>Azure DNS hosts DNS zones so you can manage DNS records in Azure.</p>
+              <p><strong>Public DNS zones</strong> resolve names from the internet. You create records (A, CNAME, TXT, MX) and point your domain's nameservers to Azure's DNS servers.</p>
+              <p><strong>Private DNS zones</strong> resolve names only within linked VNets. They're for internal name resolution — like <span class="key-term">db.internal.myapp.com</span> resolving to a private IP. No one outside your VNet can see these records.</p>
+              <div class="info-box note"><strong>Note:</strong> Private DNS zones must be explicitly linked to each VNet that needs to use them. Creating the zone alone isn't enough.</div>
+            </div>
+          </div>
+
+        </div>
+
         <!-- ==================== LAB TAB ==================== -->
-        <div id="tab-lab" class="tab-content active">
+        <div id="tab-lab" class="tab-content">
 
           <h2 style="margin-bottom: 8px;">Lab 04 &mdash; Implement Virtual Networking</h2>
           <p style="color: var(--text-muted); margin-bottom: 32px;">Estimated time: 50 minutes</p>

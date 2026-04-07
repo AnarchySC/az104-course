@@ -59,14 +59,122 @@
     <div class="module-content">
       <div class="tab-container">
         <div class="tab-nav">
-          <button class="tab-btn active" data-tab="tab-lab">Lab</button>
+          <button class="tab-btn active" data-tab="tab-lesson">Lesson</button>
+          <button class="tab-btn" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
           <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
+        <!-- ==================== LESSON TAB ==================== -->
+        <div id="tab-lesson" class="tab-content active">
+
+          <div class="lesson-intro">
+            <h2>What You'll Learn</h2>
+            <p>Monitoring tells you what's happening in your Azure environment &mdash; before users complain. This module covers Azure Monitor, alerts, action groups, Log Analytics, and KQL queries.</p>
+            <ul class="lesson-objectives">
+              <li>Understand Azure Monitor's architecture (metrics, logs, alerts)</li>
+              <li>Create alert rules that detect problems automatically</li>
+              <li>Configure action groups for notifications (email, SMS, webhooks)</li>
+              <li>Query logs using KQL (Kusto Query Language)</li>
+            </ul>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128200;</span>
+              <h3>Azure Monitor Architecture</h3>
+            </div>
+            <div class="concept-body">
+              <p>Azure Monitor collects two types of data from every Azure resource:</p>
+              <p><strong>Metrics</strong> &mdash; Numerical values sampled at regular intervals (CPU %, disk IOPS, request count). Stored for 93 days. Fast to query, good for real-time dashboards and alerts.</p>
+              <p><strong>Logs</strong> &mdash; Detailed records of events and operations (who logged in, which API was called, what errors occurred). Stored in a Log Analytics workspace. Rich querying with KQL.</p>
+              <div class="diagram-box">
+                <pre>Azure Resources &rarr; Azure Monitor
+                   ├── Metrics &rarr; Alerts, Dashboards
+                   └── Logs &rarr; Log Analytics &rarr; KQL Queries
+                                  └── Alerts, Workbooks</pre>
+              </div>
+              <p>Everything feeds into Azure Monitor automatically. You can also send custom metrics and logs from your applications.</p>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128276;</span>
+              <h3>Alerts and Action Groups</h3>
+            </div>
+            <div class="concept-body">
+              <p>An <strong>alert rule</strong> has three parts:</p>
+              <ol>
+                <li><strong>Scope</strong> &mdash; What to monitor (a VM, a subscription, a resource group)</li>
+                <li><strong>Condition</strong> &mdash; What triggers the alert (CPU &gt; 80%, VM deleted, 5xx errors &gt; 10)</li>
+                <li><strong>Action Group</strong> &mdash; Who gets notified and how</li>
+              </ol>
+              <p><strong>Action groups</strong> support multiple notification types:</p>
+              <ul>
+                <li>Email &mdash; Good for records, bad for urgency</li>
+                <li>SMS &mdash; Immediate, hard to miss</li>
+                <li>Voice call &mdash; For critical, wake-up-at-3AM alerts</li>
+                <li>Webhook &mdash; Trigger external systems (PagerDuty, ServiceNow, Slack)</li>
+                <li>Azure Function / Logic App &mdash; Automated response</li>
+              </ul>
+              <p><strong>Alert severity levels:</strong></p>
+              <ul>
+                <li>Sev 0: Critical (entire system down)</li>
+                <li>Sev 1: Error (significant functionality impacted)</li>
+                <li>Sev 2: Warning (potential issue developing)</li>
+                <li>Sev 3: Informational (something noteworthy happened)</li>
+                <li>Sev 4: Verbose (detailed diagnostic info)</li>
+              </ul>
+              <div class="real-world">Use tiered notifications: Sev 0&ndash;1 &rarr; SMS + voice call to on-call. Sev 2 &rarr; email to team. Sev 3&ndash;4 &rarr; log only. Alert fatigue kills monitoring &mdash; if everything pages, nothing gets attention.</div>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128263;</span>
+              <h3>Alert Processing Rules</h3>
+            </div>
+            <div class="concept-body">
+              <p>Alert processing rules let you <strong>suppress or modify notifications</strong> without disabling the alert rules themselves.</p>
+              <p><strong>Use case:</strong> Planned maintenance every Sunday 2&ndash;4 AM. You don't want 50 alerts flooding your inbox during expected downtime.</p>
+              <p>An alert processing rule says: "For this scope, during this time window, suppress notifications." The alerts still fire and are recorded &mdash; you just don't get notified. When the maintenance window ends, notifications resume automatically.</p>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128269;</span>
+              <h3>Log Analytics and KQL</h3>
+            </div>
+            <div class="concept-body">
+              <p><strong>Log Analytics</strong> is where Azure stores all log data. You query it using <strong>KQL (Kusto Query Language)</strong> &mdash; a pipeline-based query language.</p>
+              <p><strong>KQL basics</strong> &mdash; data flows left to right through pipes:</p>
+              <div class="diagram-box">
+                <pre>Heartbeat                              // Start with a table
+| where TimeGenerated > ago(1h)        // Filter rows
+| where Computer contains "web"        // More filtering
+| summarize count() by Computer        // Aggregate
+| sort by count_ desc                  // Sort
+| render barchart                      // Visualize</pre>
+              </div>
+              <p><strong>Common tables:</strong></p>
+              <ul>
+                <li><span class="key-term">Heartbeat</span> &mdash; VM agent check-ins (is the VM alive?)</li>
+                <li><span class="key-term">Perf</span> &mdash; Performance counters (CPU, memory, disk)</li>
+                <li><span class="key-term">AzureActivity</span> &mdash; Control plane operations (who did what)</li>
+                <li><span class="key-term">InsightsMetrics</span> &mdash; VM Insights metrics</li>
+                <li><span class="key-term">Syslog</span> / <span class="key-term">Event</span> &mdash; OS-level logs (Linux / Windows)</li>
+              </ul>
+              <div class="info-box tip"><strong>Tip:</strong> Start with pre-built queries in Log Analytics (Queries tab). They show you the available tables and common patterns. Modify them to learn KQL by example rather than from scratch.</div>
+            </div>
+          </div>
+
+        </div>
+
         <!-- ==================== LAB TAB ==================== -->
-        <div id="tab-lab" class="tab-content active">
+        <div id="tab-lab" class="tab-content">
 
           <h2 style="margin-bottom: 8px;">Lab 11 &mdash; Implement Monitoring</h2>
           <p style="color: var(--text-muted); margin-bottom: 32px;">Estimated time: 40 minutes</p>

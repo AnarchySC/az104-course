@@ -59,14 +59,125 @@
     <div class="module-content">
       <div class="tab-container">
         <div class="tab-nav">
-          <button class="tab-btn active" data-tab="tab-lab">Lab</button>
+          <button class="tab-btn active" data-tab="tab-lesson">Lesson</button>
+          <button class="tab-btn" data-tab="tab-lab">Lab</button>
           <button class="tab-btn" data-tab="tab-demo">Demo</button>
           <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
           <button class="tab-btn" data-tab="tab-prove">Prove It</button>
         </div>
 
+        <!-- ==================== LESSON TAB ==================== -->
+        <div id="tab-lesson" class="tab-content active">
+
+          <div class="lesson-intro">
+            <h2>What You'll Learn</h2>
+            <p>Platform as a Service (PaaS) lets you deploy applications without managing the underlying infrastructure. This module covers three Azure PaaS compute options: App Service, Container Instances, and Container Apps &mdash; when to use each and how they differ.</p>
+            <ul class="lesson-objectives">
+              <li>Understand PaaS vs IaaS and when to choose each</li>
+              <li>Deploy web apps with Azure App Service and deployment slots</li>
+              <li>Run containerized workloads with Azure Container Instances (ACI)</li>
+              <li>Deploy microservices with Azure Container Apps</li>
+            </ul>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#9729;</span>
+              <h3>PaaS vs IaaS</h3>
+            </div>
+            <div class="concept-body">
+              <table class="compare-table">
+                <thead>
+                  <tr><th>Aspect</th><th>IaaS (VMs)</th><th>PaaS (App Service, ACI, Container Apps)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>You manage</td><td>OS, runtime, patches, scaling</td><td>Your code/container only</td></tr>
+                  <tr><td>Azure manages</td><td>Hardware, network, virtualization</td><td>Everything else</td></tr>
+                  <tr><td>Control</td><td>Full</td><td>Limited</td></tr>
+                  <tr><td>Cost model</td><td>Pay for VM uptime</td><td>Pay for consumption or plan</td></tr>
+                  <tr><td>Best for</td><td>Custom OS, legacy apps, full control</td><td>Web apps, APIs, microservices</td></tr>
+                </tbody>
+              </table>
+              <p>PaaS removes operational burden. You don't patch servers, configure load balancers, or manage OS updates. The trade-off: less control over the underlying infrastructure.</p>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#127760;</span>
+              <h3>Azure App Service</h3>
+            </div>
+            <div class="concept-body">
+              <p>App Service is Azure's managed platform for web apps, APIs, and mobile backends. It supports .NET, Java, Node.js, Python, PHP, and Ruby.</p>
+              <p><strong>Key concepts:</strong></p>
+              <ul>
+                <li><strong>App Service Plan</strong> &mdash; The compute that powers your app. Defines the VM size, region, and pricing tier. Multiple apps can share one plan.</li>
+                <li><strong>Deployment Slots</strong> &mdash; Separate environments (staging, production) for your app. You deploy to staging, test it, then <strong>swap</strong> to production with zero downtime. If something breaks, swap back instantly.</li>
+                <li><strong>Autoscale</strong> &mdash; Automatically add or remove instances based on rules or schedules.</li>
+              </ul>
+              <p><strong>Pricing tiers that matter:</strong></p>
+              <ul>
+                <li><strong>Free (F1)</strong> &mdash; Testing only. No SLA, no custom domain, no slots.</li>
+                <li><strong>Basic (B1)</strong> &mdash; Manual scaling. No slots.</li>
+                <li><strong>Standard (S1)</strong> &mdash; Autoscale, 5 deployment slots, custom domains + SSL.</li>
+                <li><strong>Premium (P1V3)</strong> &mdash; Enhanced performance, 20 slots, VNet integration.</li>
+              </ul>
+              <div class="info-box tip"><strong>Tip:</strong> Deployment slots are one of App Service's best features. Deploy to staging, test, swap. If the swap goes wrong, swap back. The old version is always one swap away.</div>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128230;</span>
+              <h3>Azure Container Instances (ACI)</h3>
+            </div>
+            <div class="concept-body">
+              <p>ACI is the simplest way to run a container in Azure. No VMs to manage, no orchestration to configure. You give Azure a container image, and it runs it.</p>
+              <p><strong>Best for:</strong></p>
+              <ul>
+                <li>Short-lived tasks (batch jobs, data processing)</li>
+                <li>Simple applications that don't need scaling</li>
+                <li>CI/CD build agents</li>
+                <li>Quick testing and prototyping</li>
+              </ul>
+              <p><strong>NOT best for:</strong> Long-running services that need autoscaling, service discovery, or complex networking &mdash; use Container Apps or AKS instead.</p>
+              <div class="real-world">ACI charges per-second. A container that runs for 10 minutes costs almost nothing. This makes it perfect for scheduled batch jobs &mdash; spin up, process, shut down.</div>
+            </div>
+          </div>
+
+          <div class="concept-block">
+            <div class="concept-header">
+              <span class="concept-icon">&#128736;</span>
+              <h3>Azure Container Apps</h3>
+            </div>
+            <div class="concept-body">
+              <p>Container Apps is Azure's managed container platform built on Kubernetes &mdash; but you never touch Kubernetes directly. It handles scaling, load balancing, and service discovery for you.</p>
+              <p><strong>Key features:</strong></p>
+              <ul>
+                <li><strong>Revision-based deployment</strong> &mdash; Each deployment creates a revision. You can split traffic between revisions (canary deployments).</li>
+                <li><strong>Scale to zero</strong> &mdash; Apps with no traffic scale down to zero instances (you pay nothing).</li>
+                <li><strong>Dapr integration</strong> &mdash; Built-in microservices building blocks (service calls, pub/sub, state management).</li>
+                <li><strong>KEDA-based scaling</strong> &mdash; Scale on HTTP requests, queue messages, cron schedules, and more.</li>
+              </ul>
+              <table class="compare-table">
+                <thead>
+                  <tr><th>Feature</th><th>ACI</th><th>Container Apps</th><th>AKS</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Complexity</td><td>Simplest</td><td>Moderate</td><td>Most complex</td></tr>
+                  <tr><td>Scaling</td><td>None (fixed)</td><td>Autoscale, scale to zero</td><td>Full Kubernetes scaling</td></tr>
+                  <tr><td>Networking</td><td>Basic</td><td>Ingress, service discovery</td><td>Full K8s networking</td></tr>
+                  <tr><td>Best for</td><td>One-off tasks</td><td>Microservices, APIs</td><td>Full control needed</td></tr>
+                  <tr><td>You manage</td><td>Container config</td><td>Container + scaling rules</td><td>Entire cluster</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
         <!-- ==================== LAB TAB ==================== -->
-        <div id="tab-lab" class="tab-content active">
+        <div id="tab-lab" class="tab-content">
 
           <!-- ========== Lab 09a ========== -->
           <h2 style="margin-bottom: 8px;">Lab 09a &mdash; Implement Web Apps</h2>

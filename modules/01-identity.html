@@ -53,14 +53,96 @@
   <div class="module-content">
     <div class="tab-container">
       <div class="tab-nav">
-        <button class="tab-btn active" data-tab="tab-lab">Lab</button>
+        <button class="tab-btn active" data-tab="tab-lesson">Lesson</button>
+        <button class="tab-btn" data-tab="tab-lab">Lab</button>
         <button class="tab-btn" data-tab="tab-demo">Demo</button>
         <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
         <button class="tab-btn" data-tab="tab-prove">Prove It</button>
       </div>
 
+      <!-- ==================== LESSON TAB ==================== -->
+      <div id="tab-lesson" class="tab-content active">
+
+        <div class="lesson-intro">
+          <h2>What You'll Learn</h2>
+          <p>This module covers Microsoft Entra ID (formerly Azure Active Directory) — the backbone of identity and access management in Azure. You'll understand how tenants, users, and groups work together to control who can access your cloud resources.</p>
+          <ul class="lesson-objectives">
+            <li>Understand what a tenant is and how it relates to your organization</li>
+            <li>Create and manage user accounts (internal and guest)</li>
+            <li>Create and manage groups for organized access control</li>
+            <li>Know the difference between Security and Microsoft 365 groups</li>
+          </ul>
+        </div>
+
+        <div class="concept-block">
+          <div class="concept-header">
+            <span class="concept-icon">&#128273;</span>
+            <h3>What is Microsoft Entra ID?</h3>
+          </div>
+          <div class="concept-body">
+            <p>Microsoft Entra ID is Microsoft's cloud-based identity and access management service. Think of it as the <strong>bouncer at the door</strong> of your Azure environment — it decides who gets in and what they can do.</p>
+            <p>Every Azure subscription is associated with a <strong>tenant</strong>. A tenant is a dedicated instance of Entra ID that represents your organization. When your company signs up for Azure, Microsoft 365, or any Microsoft cloud service, they get a tenant.</p>
+            <p><strong>Key things to understand:</strong></p>
+            <ul>
+              <li>A tenant is NOT the same as a subscription. One tenant can have multiple subscriptions.</li>
+              <li>Your tenant has a primary domain (like <span class="key-term">yourcompany.onmicrosoft.com</span>) and can have custom domains.</li>
+              <li>The tenant is the trust boundary — users in your tenant are "internal"; everyone else is "external."</li>
+            </ul>
+            <div class="real-world">In practice, your company likely already has a tenant from Microsoft 365. Azure uses the same tenant — so your employees already have identities that work in Azure.</div>
+          </div>
+        </div>
+
+        <div class="concept-block">
+          <div class="concept-header">
+            <span class="concept-icon">&#128100;</span>
+            <h3>User Accounts</h3>
+          </div>
+          <div class="concept-body">
+            <p>There are two types of users in Entra ID:</p>
+            <p><strong>Internal users</strong> (Members): These are people who belong to your organization. They authenticate directly with your tenant and have full access to directory features. You create them directly in Entra ID.</p>
+            <p><strong>Guest users</strong> (Guests): These are external people — contractors, partners, vendors — who you invite to your tenant. They authenticate with their OWN identity provider (their own company's Entra ID, a Microsoft account, Google, etc.) but get limited access to your resources.</p>
+            <p>Important properties for every user: Display name, User Principal Name (UPN — their login), Job title, Department, Usage location (required for licensing).</p>
+            <div class="info-box tip"><strong>Tip:</strong> Always set the Usage location when creating users. Without it, you can't assign licenses — and some features won't work.</div>
+          </div>
+        </div>
+
+        <div class="concept-block">
+          <div class="concept-header">
+            <span class="concept-icon">&#128101;</span>
+            <h3>Groups</h3>
+          </div>
+          <div class="concept-body">
+            <p>Groups let you manage access for multiple users at once instead of one at a time. There are two dimensions to understand:</p>
+            <p><strong>Group Type:</strong></p>
+            <ul>
+              <li><strong>Security groups</strong> — Used for managing access to resources (RBAC role assignments, app permissions)</li>
+              <li><strong>Microsoft 365 groups</strong> — Used for collaboration (shared mailbox, SharePoint, Teams)</li>
+            </ul>
+            <p><strong>Membership Type:</strong></p>
+            <ul>
+              <li><strong>Assigned</strong> — You manually add and remove members. Simple, works everywhere.</li>
+              <li><strong>Dynamic User</strong> — Members are automatically added/removed based on user attributes (like department = "Engineering"). Requires Entra ID Premium P1.</li>
+              <li><strong>Dynamic Device</strong> — Same concept but for devices.</li>
+            </ul>
+            <table class="compare-table">
+              <thead>
+                <tr><th>Feature</th><th>Assigned</th><th>Dynamic</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Management</td><td>Manual add/remove</td><td>Automatic via rules</td></tr>
+                <tr><td>License needed</td><td>Free tier</td><td>Premium P1</td></tr>
+                <tr><td>Best for</td><td>Small teams, specific access</td><td>Large orgs, attribute-based</td></tr>
+                <tr><td>Updates</td><td>Immediate</td><td>Rule evaluation delay</td></tr>
+              </tbody>
+            </table>
+            <div class="real-world">Most companies start with assigned groups and move to dynamic as they grow. At 50 users, manual management is fine. At 500, you want dynamic groups based on department and job title.</div>
+          </div>
+        </div>
+
+      </div>
+
       <!-- ==================== LAB TAB ==================== -->
-      <div id="tab-lab" class="tab-content active">
+      <div id="tab-lab" class="tab-content">
 
         <h2 style="margin-bottom: 8px;">Lab 01 - Manage Microsoft Entra ID Identities</h2>
         <p style="color: var(--text-secondary); margin-bottom: 32px;">
