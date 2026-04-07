@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 10: Administer Data Protection | AZ-104</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='20' width='100' height='100' fill='%230078d4'/><text x='50' y='68' font-size='50' text-anchor='middle' fill='white' font-weight='bold'>Az</text></svg>">
+</head>
+<body data-module="m10">
+
+  <nav class="navbar">
+    <a href="../index.html" class="nav-brand">
+      <div class="logo">Az</div>
+      <span>AZ-104 Course</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#modules">Modules</a></li>
+      <li><a href="https://microsoftlearning.github.io/AZ-104-MicrosoftAzureAdministrator/" target="_blank">Official Labs</a></li>
+    </ul>
+  </nav>
+
+  <div class="module-page">
+
+    <section class="module-hero">
+      <div class="module-hero-content">
+        <div class="breadcrumb">
+          <a href="../index.html">AZ-104</a>
+          <span>/</span>
+          <span>Module 10</span>
+        </div>
+        <h1>Administer Data Protection</h1>
+        <p class="module-subtitle">Configure Azure Backup, Recovery Services vaults, backup policies, and Azure Site Recovery for disaster recovery.</p>
+        <div class="meta-bar">
+          <div class="meta-item">
+            <span class="icon">&#9776;</span>
+            <span>Lab 10</span>
+          </div>
+          <div class="meta-item">
+            <span class="icon">&#9654;</span>
+            <span>Demo</span>
+          </div>
+          <div class="meta-item">
+            <span class="icon">&#9998;</span>
+            <span>3 Exercises</span>
+          </div>
+          <div class="meta-item">
+            <span class="icon">&#9200;</span>
+            <span>50 min</span>
+          </div>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: 0%"></div>
+        </div>
+        <span class="progress-label" style="font-size:0.8rem; color:var(--text-muted); margin-top:6px; display:inline-block;">0/5 completed</span>
+      </div>
+    </section>
+
+    <div class="module-content">
+      <div class="tab-container">
+        <div class="tab-nav">
+          <button class="tab-btn active" data-tab="tab-lab">Lab</button>
+          <button class="tab-btn" data-tab="tab-demo">Demo</button>
+          <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
+        </div>
+
+        <!-- ==================== LAB TAB ==================== -->
+        <div id="tab-lab" class="tab-content active">
+
+          <h2 style="margin-bottom: 8px;">Lab 10 &mdash; Implement Data Protection</h2>
+          <p style="color: var(--text-muted); margin-bottom: 32px;">Estimated time: 50 minutes</p>
+
+          <!-- Task 1 -->
+          <div class="task-block">
+            <div class="task-header">
+              <input type="checkbox" class="completion-check" data-task="t1">
+              <span class="task-number">1</span>
+              <h3>Provision Infrastructure via Template</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Deploy the lab infrastructure using an ARM template to create the virtual machines needed for backup and replication exercises.</p>
+
+              <ol class="steps">
+                <li>Navigate to <strong>Deploy a custom template</strong> in the Azure Portal.</li>
+                <li>Select <strong>Build your own template in the editor</strong> and load the template file:
+                  <div class="code-block">
+                    <span class="lang-tag">Template</span>
+                    az104-10-vms-edge-template.json
+                  </div>
+                </li>
+                <li>Configure the deployment parameters:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Resource Group</td><td>az104-rg-region1 (create new)</td></tr>
+                    <tr><td>Region</td><td>East US</td></tr>
+                    <tr><td>Username</td><td>localadmin</td></tr>
+                  </table>
+                </li>
+                <li>Click <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+                <li>Wait for the deployment to complete before proceeding.</li>
+              </ol>
+
+              <div class="info-box note">
+                <strong>Note</strong>
+                ARM templates allow repeatable infrastructure deployments. This template provisions the VMs, networking, and storage needed for the backup and disaster recovery tasks.
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 2 -->
+          <div class="task-block">
+            <div class="task-header">
+              <input type="checkbox" class="completion-check" data-task="t2">
+              <span class="task-number">2</span>
+              <h3>Create Recovery Services Vault</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Create a Recovery Services vault to store backup data and manage backup policies.</p>
+
+              <ol class="steps">
+                <li>Search for and select <strong>Recovery Services vaults</strong>, then click <strong>+ Create</strong>.</li>
+                <li>Configure the vault:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Resource Group</td><td>az104-rg-region1</td></tr>
+                    <tr><td>Vault name</td><td>az104-rsv-region1</td></tr>
+                    <tr><td>Region</td><td>East US</td></tr>
+                  </table>
+                </li>
+                <li>Click <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+                <li>Once deployed, navigate to the vault and open the <strong>Properties</strong> blade.</li>
+                <li>Under <strong>Backup Configuration</strong>, review the storage replication type (default: <strong>Geo-redundant</strong>).</li>
+                <li>Under <strong>Security Settings</strong>, verify the soft delete retention period is set to <strong>14 days</strong>.</li>
+              </ol>
+
+              <div class="info-box tip">
+                <strong>Tip</strong>
+                Geo-redundant storage replicates backup data to a paired Azure region, providing protection against regional outages. For cost savings in non-critical environments, you can switch to Locally-redundant storage &mdash; but only before the first backup is configured.
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 3 -->
+          <div class="task-block">
+            <div class="task-header">
+              <input type="checkbox" class="completion-check" data-task="t3">
+              <span class="task-number">3</span>
+              <h3>Configure VM-Level Backup</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Configure a backup policy and enable backup for a virtual machine.</p>
+
+              <ol class="steps">
+                <li>In the <strong>az104-rsv-region1</strong> vault, click <strong>+ Backup</strong>.</li>
+                <li>Set the backup goal:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Where is your workload running?</td><td>Azure</td></tr>
+                    <tr><td>What do you want to back up?</td><td>Virtual machine</td></tr>
+                  </table>
+                </li>
+                <li>Click <strong>Backup</strong> to proceed to the policy configuration.</li>
+                <li>Create a new backup policy:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Policy name</td><td>az104-backup</td></tr>
+                    <tr><td>Frequency</td><td>Daily</td></tr>
+                    <tr><td>Time</td><td>12:00 AM</td></tr>
+                    <tr><td>Instant restore snapshot retention</td><td>2 days</td></tr>
+                  </table>
+                </li>
+                <li>Under <strong>Virtual Machines</strong>, click <strong>Add</strong> and select <strong>az104-10-vm0</strong>.</li>
+                <li>Click <strong>Enable Backup</strong>.</li>
+                <li>Return to the vault &rarr; <strong>Backup items</strong> &rarr; <strong>Azure Virtual Machine</strong>.</li>
+                <li>Select <strong>az104-10-vm0</strong> and click <strong>Backup now</strong> to trigger an on-demand backup.</li>
+              </ol>
+
+              <div class="info-box note">
+                <strong>Note</strong>
+                Instant restore snapshots are stored locally for fast recovery. The snapshot is later transferred to the vault storage. Keeping 2 days of snapshots balances fast restore capability with storage cost.
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 4 -->
+          <div class="task-block">
+            <div class="task-header">
+              <input type="checkbox" class="completion-check" data-task="t4">
+              <span class="task-number">4</span>
+              <h3>Monitor Azure Backup</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Configure diagnostic settings to monitor backup operations and review job status.</p>
+
+              <ol class="steps">
+                <li>Create a storage account for diagnostics:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Resource Group</td><td>az104-rg-region1</td></tr>
+                    <tr><td>Name</td><td>(unique storage account name)</td></tr>
+                    <tr><td>Region</td><td>East US</td></tr>
+                  </table>
+                </li>
+                <li>Navigate to the <strong>az104-rsv-region1</strong> vault &rarr; <strong>Diagnostic settings</strong>.</li>
+                <li>Click <strong>+ Add diagnostic setting</strong> and configure:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Diagnostic setting name</td><td>az104-backup-diagnostics</td></tr>
+                    <tr><td>Categories</td><td>Backup reporting data, Backup job data, Backup alert data, Site recovery events</td></tr>
+                    <tr><td>Destination</td><td>Archive to a storage account</td></tr>
+                    <tr><td>Storage account</td><td>(select the account created above)</td></tr>
+                  </table>
+                </li>
+                <li>Click <strong>Save</strong>.</li>
+                <li>Return to the vault and navigate to <strong>Backup Jobs</strong> to review the status of the on-demand backup triggered earlier.</li>
+              </ol>
+
+              <div class="info-box tip">
+                <strong>Tip</strong>
+                For production environments, consider sending diagnostic data to a Log Analytics workspace instead of a storage account. This enables rich querying with Kusto (KQL) and integration with Azure Monitor workbooks for backup reporting.
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 5 -->
+          <div class="task-block">
+            <div class="task-header">
+              <input type="checkbox" class="completion-check" data-task="t5">
+              <span class="task-number">5</span>
+              <h3>Enable VM Replication</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Configure Azure Site Recovery to replicate a VM to a secondary region for disaster recovery.</p>
+
+              <ol class="steps">
+                <li>Create a second Recovery Services vault in a different region:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Resource Group</td><td>az104-rg-region2 (create new)</td></tr>
+                    <tr><td>Vault name</td><td>az104-rsv-region2</td></tr>
+                    <tr><td>Region</td><td>West US</td></tr>
+                  </table>
+                </li>
+                <li>Navigate to <strong>az104-10-vm0</strong> in the portal.</li>
+                <li>Under <strong>Operations</strong>, select <strong>Disaster recovery</strong>.</li>
+                <li>Configure the replication settings:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Target region</td><td>West US</td></tr>
+                  </table>
+                </li>
+                <li>Click <strong>Review + Start replication</strong>, then <strong>Start replication</strong>.</li>
+                <li>Wait 10&ndash;15 minutes for the initial replication to complete.</li>
+                <li>Return to the VM's <strong>Disaster recovery</strong> blade and verify the replication health shows <strong>Healthy</strong>.</li>
+              </ol>
+
+              <div class="info-box note">
+                <strong>Note</strong>
+                Azure Site Recovery continuously replicates VM data to the target region. During a regional outage, you can fail over to the secondary region with minimal data loss. The target vault (<strong>az104-rsv-region2</strong>) must be in the same region as the failover destination.
+              </div>
+            </div>
+          </div>
+
+          <!-- Key Takeaways -->
+          <div class="takeaways">
+            <h3>Key Takeaways</h3>
+            <ul>
+              <li>Azure Backup provides simple, secure backup and recovery for Azure workloads.</li>
+              <li>Backup policies control the frequency of backups and retention of recovery points.</li>
+              <li>Azure Site Recovery replicates workloads to a secondary region for disaster recovery.</li>
+              <li>Recovery Services vaults centralize backup storage and management.</li>
+              <li>Soft delete protects against accidental deletion of backup data for 14 days.</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- ==================== DEMO TAB ==================== -->
+        <div id="tab-demo" class="tab-content">
+
+          <h2 style="margin-bottom: 32px;">Demonstrations</h2>
+
+          <div class="task-block">
+            <div class="task-header">
+              <span class="task-number">1</span>
+              <h3>Recovery Services Vault Creation</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Walk through creating a Recovery Services vault and reviewing its configuration:</p>
+              <ol class="steps">
+                <li>Navigate to <strong>Recovery Services vaults</strong> and create a new vault.</li>
+                <li>Explain the <strong>region requirement</strong>: the vault must be in the same region as the resources being backed up.</li>
+                <li>Review <strong>Properties</strong> &rarr; <strong>Backup Configuration</strong>: Geo-redundant vs Locally-redundant storage.</li>
+                <li>Review <strong>Properties</strong> &rarr; <strong>Security Settings</strong>: soft delete, multi-user authorization.</li>
+                <li>Explain when to change storage replication type (before first backup only).</li>
+              </ol>
+              <div class="info-box note">
+                <strong>Note</strong>
+                For disaster recovery (Site Recovery), the vault must be in the <em>target</em> region, not the source region. For backup, the vault must be in the <em>same</em> region as the protected resource.
+              </div>
+            </div>
+          </div>
+
+          <div class="task-block">
+            <div class="task-header">
+              <span class="task-number">2</span>
+              <h3>Azure Files Backup Configuration</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Demonstrate backing up Azure file shares using a Recovery Services vault:</p>
+              <ol class="steps">
+                <li>In a Recovery Services vault, click <strong>+ Backup</strong>.</li>
+                <li>Set workload to <strong>Azure</strong> and select <strong>Azure File Share</strong>.</li>
+                <li>Select the storage account containing the file share.</li>
+                <li>Choose the file share(s) to protect.</li>
+                <li>Review the default backup policy: daily schedule, 30-day retention.</li>
+                <li>Demonstrate creating a custom policy with different retention settings.</li>
+              </ol>
+              <div class="info-box tip">
+                <strong>Tip</strong>
+                Azure Files backup uses share snapshots. Restores can target the original location or an alternate file share. Individual file-level restore is also supported.
+              </div>
+            </div>
+          </div>
+
+          <div class="task-block">
+            <div class="task-header">
+              <span class="task-number">3</span>
+              <h3>VM Backup: Policy, On-Demand Backup, and Monitoring</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Demonstrate the full VM backup workflow in the Azure Portal:</p>
+              <ol class="steps">
+                <li>Open a Recovery Services vault and navigate to <strong>Backup policies</strong>.</li>
+                <li>Review the <strong>DefaultPolicy</strong>: daily at 12 AM, 30-day retention.</li>
+                <li>Navigate to <strong>Backup items</strong> &rarr; <strong>Azure Virtual Machine</strong> and select a backed-up VM.</li>
+                <li>Trigger an <strong>on-demand backup</strong> (Backup now) and set the retention date.</li>
+                <li>Navigate to <strong>Backup Jobs</strong> to monitor the job progress.</li>
+                <li>Show the different job phases: snapshot, transfer data to vault.</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="task-block">
+            <div class="task-header">
+              <span class="task-number">4</span>
+              <h3>Restore Procedures</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Walk through the VM restore options without executing a restore:</p>
+              <ol class="steps">
+                <li>Navigate to a backed-up VM in the Recovery Services vault.</li>
+                <li>Click <strong>Restore VM</strong> and review the available recovery points.</li>
+                <li>Explain the restore options:
+                  <ul>
+                    <li><strong>Create new VM</strong>: Deploy a new VM from the recovery point.</li>
+                    <li><strong>Replace existing</strong>: Swap the current VM's disks with the backed-up versions.</li>
+                    <li><strong>Restore disks</strong>: Restore disks to a storage account for manual attachment.</li>
+                  </ul>
+                </li>
+                <li>Demonstrate <strong>File Recovery</strong>: mount a recovery point as a drive to recover individual files.</li>
+              </ol>
+              <div class="info-box note">
+                <strong>Note</strong>
+                "Replace existing" requires the original VM to still exist. If the VM has been deleted, use "Create new" instead.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ==================== EXERCISES TAB ==================== -->
+        <div id="tab-exercises" class="tab-content">
+
+          <h2 style="margin-bottom: 32px;">Exercises</h2>
+
+          <!-- Exercise 1 -->
+          <div class="exercise-card">
+            <span class="difficulty easy">Easy</span>
+            <h4>Exercise 1: Backup Policy Review</h4>
+            <ol>
+              <li>Navigate to a Recovery Services vault.</li>
+              <li>Open <strong>Backup policies</strong> and review the default policy.</li>
+              <li>Document the following: schedule frequency, retention for daily, weekly, monthly, and yearly backups.</li>
+              <li>What is the maximum retention period for daily backups?</li>
+            </ol>
+            <div class="hint">
+              <strong>Show Hint</strong>
+              <div class="hint-text">The default policy schedules daily backups at a specific time with 30-day retention. The maximum retention period for daily backups is 9999 days (approximately 27 years). Weekly, monthly, and yearly retention points can be configured separately for long-term compliance needs.</div>
+            </div>
+          </div>
+
+          <!-- Exercise 2 -->
+          <div class="exercise-card">
+            <span class="difficulty medium">Medium</span>
+            <h4>Exercise 2: Backup and Restore Simulation</h4>
+            <ol>
+              <li>Create a Recovery Services vault and configure backup for a virtual machine.</li>
+              <li>Trigger an on-demand backup and wait for it to complete.</li>
+              <li>Navigate to the backup item and select <strong>Restore VM</strong>.</li>
+              <li>Review the two restore options: <strong>Create new VM</strong> vs <strong>Replace existing</strong>.</li>
+              <li>Document the steps required for each option but <strong>DO NOT execute the restore</strong> (to save time and cost).</li>
+            </ol>
+            <div class="hint">
+              <strong>Show Hint</strong>
+              <div class="hint-text">"Replace existing" requires the original VM to still exist &mdash; it swaps the VM's disks with the backed-up versions. "Create new" deploys a fresh VM from the backup recovery point. For production scenarios, "Restore disks" gives you the most control by restoring disks to a storage account for manual attachment.</div>
+            </div>
+          </div>
+
+          <!-- Exercise 3 -->
+          <div class="exercise-card">
+            <span class="difficulty hard">Hard</span>
+            <h4>Exercise 3: Disaster Recovery Architecture</h4>
+            <p>Design a DR strategy for a 3-tier application (web tier, application tier, database tier).</p>
+            <ol>
+              <li>Identify the primary region (<strong>East US</strong>) and secondary region (<strong>West US</strong>).</li>
+              <li>Configure Site Recovery replication for the web and application tier VMs.</li>
+              <li>For the database tier, explain why Site Recovery alone is not sufficient.</li>
+              <li>Document RPO (Recovery Point Objective) and RTO (Recovery Time Objective) targets for each tier.</li>
+              <li>Create a failover runbook: What steps happen during failover? In what order?</li>
+              <li>Explain the difference between <strong>planned failover</strong> and <strong>unplanned failover</strong>.</li>
+            </ol>
+            <div class="hint">
+              <strong>Show Hint</strong>
+              <div class="hint-text">Databases need their own replication mechanism (e.g., SQL Always On Availability Groups, Cosmos DB multi-region writes) because Site Recovery handles compute replication, not data-layer consistency. Planned failover ensures zero data loss by synchronizing all pending changes before switching over. Unplanned failover may result in data loss up to the last recovery point (RPO). A typical runbook order: (1) fail over database, (2) fail over app tier, (3) fail over web tier, (4) update DNS/Traffic Manager.</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div><!-- /tab-container -->
+    </div><!-- /module-content -->
+
+  </div><!-- /module-page -->
+
+  <footer class="site-footer">
+    <p>Built for the AZ-104 Azure Administrator certification. Lab content sourced from <a href="https://microsoftlearning.github.io/AZ-104-MicrosoftAzureAdministrator/" target="_blank">Microsoft Learning</a>.</p>
+  </footer>
+
+  <script src="../js/app.js"></script>
+</body>
+</html>

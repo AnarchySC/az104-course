@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 05: Administer Intersite Connectivity | AZ-104</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='20' width='100' height='100' fill='%230078d4'/><text x='50' y='68' font-size='50' text-anchor='middle' fill='white' font-weight='bold'>Az</text></svg>">
+</head>
+<body data-module="m05">
+
+  <nav class="navbar">
+    <a href="../index.html" class="nav-brand">
+      <div class="logo">Az</div>
+      <span>AZ-104 Course</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#modules">Modules</a></li>
+      <li><a href="https://microsoftlearning.github.io/AZ-104-MicrosoftAzureAdministrator/" target="_blank">Official Labs</a></li>
+    </ul>
+  </nav>
+
+  <div class="module-page">
+
+    <section class="module-hero">
+      <div class="module-hero-content">
+        <div class="breadcrumb">
+          <a href="../index.html">AZ-104</a>
+          <span>/</span>
+          <span>Module 05</span>
+        </div>
+        <h1>Administer Intersite Connectivity</h1>
+        <p class="module-subtitle">Configure virtual network peering, test connectivity with Network Watcher, and implement custom routing with route tables.</p>
+        <div class="meta-bar">
+          <div class="meta-item">
+            <span class="icon">&#9776;</span>
+            <span>Lab 05</span>
+          </div>
+          <div class="meta-item">
+            <span class="icon">&#9654;</span>
+            <span>Demo</span>
+          </div>
+          <div class="meta-item">
+            <span class="icon">&#9998;</span>
+            <span>3 Exercises</span>
+          </div>
+          <div class="meta-item">
+            <span class="icon">&#9200;</span>
+            <span>50 min</span>
+          </div>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: 0%"></div>
+        </div>
+        <span class="progress-label" style="font-size:0.8rem; color:var(--text-muted); margin-top:6px; display:inline-block;">0/6 completed</span>
+      </div>
+    </section>
+
+    <div class="module-content">
+      <div class="tab-container">
+        <div class="tab-nav">
+          <button class="tab-btn active" data-tab="tab-lab">Lab</button>
+          <button class="tab-btn" data-tab="tab-demo">Demo</button>
+          <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
+        </div>
+
+        <!-- ==================== LAB TAB ==================== -->
+        <div id="tab-lab" class="tab-content active">
+
+          <h2 style="margin-bottom: 8px;">Lab 05 &mdash; Implement Intersite Connectivity</h2>
+          <p style="color: var(--text-muted); margin-bottom: 32px;">Estimated time: 50 minutes</p>
+
+          <!-- Task 1 -->
+          <div class="task-block">
+            <div class="task-header">
+              <input type="checkbox" class="completion-check" data-task="t1">
+              <span class="task-number">1</span>
+              <h3>Create Core Services VM &amp; Network</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Create the core services virtual network and deploy a Windows Server VM into it.</p>
+
+              <ol class="steps">
+                <li>Navigate to <strong>Virtual Networks</strong> and click <strong>+ Create</strong>.</li>
+                <li>Configure the virtual network:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Resource Group</td><td>az104-rg5 (create new)</td></tr>
+                    <tr><td>Name</td><td>CoreServicesVnet</td></tr>
+                    <tr><td>Address space</td><td>10.0.0.0/16</td></tr>
+                  </table>
+                </li>
+                <li>Delete the default subnet and add a new subnet:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Subnet name</td><td>Core</td></tr>
+                    <tr><td>Address range</td><td>10.0.0.0/24</td></tr>
+                  </table>
+                </li>
+                <li>Click <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+                <li>Navigate to <strong>Virtual Machines</strong> and click <strong>+ Create</strong>.</li>
+                <li>Deploy the VM with these settings:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Resource Group</td><td>az104-rg5</td></tr>
+                    <tr><td>Name</td><td>CoreServicesVM</td></tr>
+                    <tr><td>Image</td><td>Windows Server 2025 Datacenter</td></tr>
+                    <tr><td>Size</td><td>Standard_D2s_v3</td></tr>
+                    <tr><td>Username</td><td>localadmin</td></tr>
+                    <tr><td>Virtual network</td><td>CoreServicesVnet</td></tr>
+                    <tr><td>Subnet</td><td>Core (10.0.0.0/24)</td></tr>
+                  </table>
+                </li>
+                <li>Set a password, accept remaining defaults, and deploy the VM.</li>
+              </ol>
+
+              <div class="info-box note">
+                <strong>Note</strong>
+                The CoreServicesVM will serve as the target for connectivity testing later in this lab.
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 2 -->
+          <div class="task-block">
+            <div class="task-header">
+              <input type="checkbox" class="completion-check" data-task="t2">
+              <span class="task-number">2</span>
+              <h3>Create Manufacturing VM &amp; Network</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Create a second virtual network and VM to simulate a separate site.</p>
+
+              <ol class="steps">
+                <li>Navigate to <strong>Virtual Networks</strong> and click <strong>+ Create</strong>.</li>
+                <li>Configure the virtual network:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Resource Group</td><td>az104-rg5</td></tr>
+                    <tr><td>Name</td><td>ManufacturingVnet</td></tr>
+                    <tr><td>Address space</td><td>172.16.0.0/16</td></tr>
+                  </table>
+                </li>
+                <li>Delete the default subnet and add a new subnet:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Subnet name</td><td>Manufacturing</td></tr>
+                    <tr><td>Address range</td><td>172.16.0.0/24</td></tr>
+                  </table>
+                </li>
+                <li>Click <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+                <li>Deploy a VM with the same specifications as Task 1:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Name</td><td>ManufacturingVM</td></tr>
+                    <tr><td>Image</td><td>Windows Server 2025 Datacenter</td></tr>
+                    <tr><td>Size</td><td>Standard_D2s_v3</td></tr>
+                    <tr><td>Username</td><td>localadmin</td></tr>
+                    <tr><td>Virtual network</td><td>ManufacturingVnet</td></tr>
+                    <tr><td>Subnet</td><td>Manufacturing (172.16.0.0/24)</td></tr>
+                  </table>
+                </li>
+                <li>Set a password, accept remaining defaults, and deploy the VM.</li>
+              </ol>
+
+              <div class="info-box tip">
+                <strong>Tip</strong>
+                Both VMs must finish deploying before you can proceed to connectivity testing. Use the Notifications bell to monitor deployment progress.
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 3 -->
+          <div class="task-block">
+            <div class="task-header">
+              <input type="checkbox" class="completion-check" data-task="t3">
+              <span class="task-number">3</span>
+              <h3>Network Watcher Connection Testing</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Use Network Watcher to verify that the two VMs cannot communicate before peering is configured.</p>
+
+              <ol class="steps">
+                <li>Navigate to <strong>Network Watcher</strong> in the Azure Portal.</li>
+                <li>Select <strong>Connection Troubleshoot</strong> from the left menu.</li>
+                <li>Configure the test:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Source</td><td>CoreServicesVM</td></tr>
+                    <tr><td>Destination</td><td>ManufacturingVM</td></tr>
+                    <tr><td>Protocol</td><td>TCP</td></tr>
+                    <tr><td>Destination port</td><td>3389</td></tr>
+                  </table>
+                </li>
+                <li>Click <strong>Check</strong> and wait for the result.</li>
+                <li>Verify the result shows <strong>Unreachable</strong> status.</li>
+              </ol>
+
+              <div class="info-box warning">
+                <strong>Expected Result</strong>
+                The connection should fail because the two virtual networks are isolated. Without explicit peering or a gateway, traffic between separate VNets is not routed.
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 4 -->
+          <div class="task-block">
+            <div class="task-header">
+              <input type="checkbox" class="completion-check" data-task="t4">
+              <span class="task-number">4</span>
+              <h3>Configure Virtual Network Peering</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Create bidirectional peering between CoreServicesVnet and ManufacturingVnet to enable private connectivity.</p>
+
+              <ol class="steps">
+                <li>Navigate to <strong>CoreServicesVnet</strong> and select <strong>Peerings</strong> from the left menu.</li>
+                <li>Click <strong>+ Add</strong> to create a new peering.</li>
+                <li>Configure the peering (this VNet side):
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Peering link name (this VNet)</td><td>CoreServices-to-Manufacturing</td></tr>
+                    <tr><td>Allow access to remote VNet</td><td>Enabled</td></tr>
+                    <tr><td>Allow forwarded traffic</td><td>Enabled</td></tr>
+                  </table>
+                </li>
+                <li>Configure the remote VNet side:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Peering link name (remote VNet)</td><td>Manufacturing-to-CoreServices</td></tr>
+                    <tr><td>Virtual network</td><td>ManufacturingVnet</td></tr>
+                    <tr><td>Allow access to remote VNet</td><td>Enabled</td></tr>
+                    <tr><td>Allow forwarded traffic</td><td>Enabled</td></tr>
+                  </table>
+                </li>
+                <li>Click <strong>Add</strong> to create the bidirectional peering.</li>
+                <li>Wait for both peering links to show <strong>Connected</strong> status.</li>
+              </ol>
+
+              <div class="info-box note">
+                <strong>Note</strong>
+                Azure creates peering in both directions simultaneously when you configure it from the portal. Both sides must show "Connected" status for traffic to flow. Peering uses the Microsoft backbone network &mdash; no public Internet, no gateways, no encryption needed.
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 5 -->
+          <div class="task-block">
+            <div class="task-header">
+              <input type="checkbox" class="completion-check" data-task="t5">
+              <span class="task-number">5</span>
+              <h3>Retest Connectivity with PowerShell</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Verify that peering has enabled connectivity by testing from the ManufacturingVM.</p>
+
+              <ol class="steps">
+                <li>Navigate to <strong>CoreServicesVM</strong> and note its <strong>private IP address</strong> from the Overview blade.</li>
+                <li>Connect to <strong>ManufacturingVM</strong> via RDP or Bastion.</li>
+                <li>Open <strong>PowerShell</strong> on ManufacturingVM and run:
+                  <div class="code-block">
+                    <span class="lang-tag">PowerShell</span>
+                    Test-NetConnection &lt;CoreServicesVM-Private-IP&gt; -port 3389
+                  </div>
+                </li>
+                <li>Verify the result shows <strong>TcpTestSucceeded: True</strong>.</li>
+              </ol>
+
+              <div class="info-box tip">
+                <strong>Tip</strong>
+                If the test still fails, verify that both peering links show "Connected" status and that no NSG rules are blocking port 3389 on the destination VM.
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 6 -->
+          <div class="task-block">
+            <div class="task-header">
+              <input type="checkbox" class="completion-check" data-task="t6">
+              <span class="task-number">6</span>
+              <h3>Create a Custom Route</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Add a perimeter subnet and configure a user-defined route to direct traffic through a virtual appliance.</p>
+
+              <ol class="steps">
+                <li>Navigate to <strong>CoreServicesVnet</strong> and select <strong>Subnets</strong>.</li>
+                <li>Add a new subnet:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Subnet name</td><td>perimeter</td></tr>
+                    <tr><td>Address range</td><td>10.0.1.0/24</td></tr>
+                  </table>
+                </li>
+                <li>Navigate to <strong>Route tables</strong> and click <strong>+ Create</strong>:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Resource Group</td><td>az104-rg5</td></tr>
+                    <tr><td>Name</td><td>rt-CoreServices</td></tr>
+                    <tr><td>Region</td><td>(same as VNet)</td></tr>
+                  </table>
+                </li>
+                <li>Open the route table and select <strong>Routes</strong>, then click <strong>+ Add</strong>:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Route name</td><td>PerimetertoCore</td></tr>
+                    <tr><td>Destination type</td><td>IP Addresses</td></tr>
+                    <tr><td>Destination</td><td>10.0.0.0/16</td></tr>
+                    <tr><td>Next hop type</td><td>Virtual appliance</td></tr>
+                    <tr><td>Next hop address</td><td>10.0.1.7</td></tr>
+                  </table>
+                </li>
+                <li>Select <strong>Subnets</strong> in the route table and click <strong>+ Associate</strong>.</li>
+                <li>Associate the route table with the <strong>perimeter</strong> subnet in <strong>CoreServicesVnet</strong>.</li>
+              </ol>
+
+              <div class="info-box warning">
+                <strong>Warning</strong>
+                The virtual appliance IP (10.0.1.7) must exist and have IP forwarding enabled for traffic to actually flow through it. In this lab the route demonstrates the concept &mdash; without a real appliance, traffic routed to that IP will be dropped.
+              </div>
+            </div>
+          </div>
+
+          <!-- Key Takeaways -->
+          <div class="takeaways">
+            <h3>Key Takeaways</h3>
+            <ul>
+              <li>Virtual networks are isolated by default &mdash; without explicit peering or a gateway, VMs in different VNets cannot communicate.</li>
+              <li>VNet peering uses Microsoft backbone infrastructure &mdash; low latency, high bandwidth, no public Internet exposure.</li>
+              <li>System routes are created automatically for each subnet; user-defined routes (UDRs) override them when more specific.</li>
+              <li>Network Watcher provides diagnostic tools like Connection Troubleshoot to test and verify connectivity between resources.</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- ==================== DEMO TAB ==================== -->
+        <div id="tab-demo" class="tab-content">
+
+          <h2 style="margin-bottom: 32px;">Demonstrations</h2>
+
+          <div class="task-block">
+            <div class="task-header">
+              <span class="task-number">1</span>
+              <h3>VNet Peering Configuration</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Walk through configuring bidirectional VNet peering in the Azure Portal:</p>
+              <ol class="steps">
+                <li>Open a virtual network and navigate to the <strong>Peerings</strong> blade.</li>
+                <li>Show the peering creation form &mdash; both the local and remote VNet settings are configured at the same time.</li>
+                <li>Explain the "Allow access" and "Allow forwarded traffic" toggles and when each is needed.</li>
+                <li>Demonstrate that peering is <strong>non-transitive</strong>: if VNet A peers with VNet B and VNet B peers with VNet C, VNet A cannot reach VNet C without its own peering or a route.</li>
+                <li>Show the peering status progression: Initiated &rarr; Connected.</li>
+              </ol>
+              <div class="info-box note">
+                <strong>Note</strong>
+                Peering can also be configured across subscriptions and across regions (global peering). Global peering has different pricing but uses the same backbone infrastructure.
+              </div>
+            </div>
+          </div>
+
+          <div class="task-block">
+            <div class="task-header">
+              <span class="task-number">2</span>
+              <h3>Network Routing and Endpoints</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Demonstrate how Azure handles network routing and service endpoints:</p>
+              <ol class="steps">
+                <li>Navigate to a NIC and open <strong>Effective routes</strong> to show the system-generated route table.</li>
+                <li>Identify the default routes: VNet address space, 0.0.0.0/0 (Internet), and RFC 1918 blocks (None).</li>
+                <li>Show how peering adds routes automatically &mdash; the peered VNet address space appears as "VNet peering" next hop.</li>
+                <li>Demonstrate <strong>Service Endpoints</strong>: enable a service endpoint for Azure Storage on a subnet and show the resulting route entry.</li>
+                <li>Explain the difference between service endpoints (route-based, within Azure) and private endpoints (private IP in your VNet).</li>
+              </ol>
+              <div class="info-box tip">
+                <strong>Tip</strong>
+                Effective routes on a NIC show the combined result of system routes, UDRs, and BGP routes. This is the best tool for debugging routing issues.
+              </div>
+            </div>
+          </div>
+
+          <div class="task-block">
+            <div class="task-header">
+              <span class="task-number">3</span>
+              <h3>Route Tables and Subnet Association</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Demonstrate creating and associating route tables with subnets:</p>
+              <ol class="steps">
+                <li>Create a new route table and explain the "Propagate gateway routes" setting.</li>
+                <li>Add a custom route with a virtual appliance next hop type.</li>
+                <li>Associate the route table with a subnet and show how it appears in the subnet configuration.</li>
+                <li>Navigate to a VM NIC in the associated subnet and check <strong>Effective routes</strong> to see the UDR override the system route.</li>
+                <li>Explain route specificity: more specific prefixes win, and UDRs override system routes for the same prefix.</li>
+              </ol>
+              <div class="info-box warning">
+                <strong>Warning</strong>
+                A misconfigured route table can break all connectivity for a subnet. Always verify effective routes after making changes, and keep the Azure Portal accessible from a non-affected path.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ==================== EXERCISES TAB ==================== -->
+        <div id="tab-exercises" class="tab-content">
+
+          <h2 style="margin-bottom: 32px;">Exercises</h2>
+
+          <!-- Exercise 1 -->
+          <div class="exercise-card">
+            <span class="difficulty easy">Easy</span>
+            <h4>Exercise 1: Peering Status Check</h4>
+            <ol>
+              <li>Navigate to any virtual network and open the <strong>Peerings</strong> blade.</li>
+              <li>If peerings exist, verify both sides show <strong>Connected</strong> status.</li>
+              <li>Check if <strong>Allow forwarded traffic</strong> is enabled on both sides.</li>
+              <li>Document the address spaces of both peered networks.</li>
+            </ol>
+            <div class="hint">
+              <strong>Show Hint</strong>
+              <div class="hint-text">Peering must be created from both sides. If one side shows "Initiated", the other side hasn't been configured yet. Both sides must show "Connected" for traffic to flow.</div>
+            </div>
+          </div>
+
+          <!-- Exercise 2 -->
+          <div class="exercise-card">
+            <span class="difficulty medium">Medium</span>
+            <h4>Exercise 2: Connectivity Diagnosis</h4>
+            <ol>
+              <li>Deploy two VMs in different virtual networks (no peering configured).</li>
+              <li>Use <strong>Network Watcher &gt; Connection Troubleshoot</strong> to test TCP 3389 between them.</li>
+              <li>Document the failure and the reason given.</li>
+              <li>Create bidirectional peering between the VNets.</li>
+              <li>Re-test connectivity and document the successful result.</li>
+            </ol>
+            <div class="hint">
+              <strong>Show Hint</strong>
+              <div class="hint-text">Network Watcher's Connection Troubleshoot shows each hop in the path. Look at where the traffic is being dropped. Before peering, the traffic has no route to the destination VNet. After peering, the Microsoft backbone provides the path.</div>
+            </div>
+          </div>
+
+          <!-- Exercise 3 -->
+          <div class="exercise-card">
+            <span class="difficulty hard">Hard</span>
+            <h4>Exercise 3: Custom Routing Design</h4>
+            <p>Design a hub-and-spoke network with custom routing:</p>
+            <ol>
+              <li>Create a hub VNet (<strong>10.0.0.0/16</strong>) with a "firewall" subnet (<strong>10.0.1.0/24</strong>).</li>
+              <li>Create two spoke VNets (<strong>10.1.0.0/16</strong> and <strong>10.2.0.0/16</strong>).</li>
+              <li>Peer both spokes to the hub (but not to each other).</li>
+              <li>Create a route table that forces spoke-to-spoke traffic through the hub's firewall subnet.</li>
+              <li>Associate the route table with both spoke subnets.</li>
+              <li>Explain: Why can't Spoke1 talk to Spoke2 without the custom route?</li>
+            </ol>
+            <div class="hint">
+              <strong>Show Hint</strong>
+              <div class="hint-text">VNet peering is non-transitive. Spoke1 peers with Hub and Spoke2 peers with Hub, but Spoke1 and Spoke2 can't see each other automatically. You need user-defined routes that send spoke-to-spoke traffic to a virtual appliance (firewall) in the hub, which then forwards it to the other spoke.</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div><!-- /tab-container -->
+    </div><!-- /module-content -->
+
+  </div><!-- /module-page -->
+
+  <footer class="site-footer">
+    <p>Built for the AZ-104 Azure Administrator certification. Lab content sourced from <a href="https://microsoftlearning.github.io/AZ-104-MicrosoftAzureAdministrator/" target="_blank">Microsoft Learning</a>.</p>
+  </footer>
+
+  <script src="../js/app.js"></script>
+</body>
+</html>

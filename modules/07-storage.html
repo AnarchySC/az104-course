@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 07: Administer Azure Storage | AZ-104</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='20' width='100' height='100' fill='%230078d4'/><text x='50' y='68' font-size='50' text-anchor='middle' fill='white' font-weight='bold'>Az</text></svg>">
+</head>
+<body data-module="m07">
+
+  <nav class="navbar">
+    <a href="../index.html" class="nav-brand">
+      <div class="logo">Az</div>
+      <span>AZ-104 Course</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#modules">Modules</a></li>
+      <li><a href="https://microsoftlearning.github.io/AZ-104-MicrosoftAzureAdministrator/" target="_blank">Official Labs</a></li>
+    </ul>
+  </nav>
+
+  <div class="module-page">
+
+    <section class="module-hero">
+      <div class="module-hero-content">
+        <div class="breadcrumb">
+          <a href="../index.html">AZ-104</a>
+          <span>/</span>
+          <span>Module 07</span>
+        </div>
+        <h1>Administer Azure Storage</h1>
+        <p class="module-subtitle">Create storage accounts, configure blob and file storage, manage access with SAS tokens, and secure data with immutable policies.</p>
+        <div class="meta-bar">
+          <div class="meta-item">
+            <span class="icon">&#9776;</span>
+            <span>Lab 07</span>
+          </div>
+          <div class="meta-item">
+            <span class="icon">&#9654;</span>
+            <span>Demo</span>
+          </div>
+          <div class="meta-item">
+            <span class="icon">&#9998;</span>
+            <span>3 Exercises</span>
+          </div>
+          <div class="meta-item">
+            <span class="icon">&#9200;</span>
+            <span>50 min</span>
+          </div>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: 0%"></div>
+        </div>
+        <span class="progress-label" style="font-size:0.8rem; color:var(--text-muted); margin-top:6px; display:inline-block;">0/3 completed</span>
+      </div>
+    </section>
+
+    <div class="module-content">
+      <div class="tab-container">
+        <div class="tab-nav">
+          <button class="tab-btn active" data-tab="tab-lab">Lab</button>
+          <button class="tab-btn" data-tab="tab-demo">Demo</button>
+          <button class="tab-btn" data-tab="tab-exercises">Exercises</button>
+        </div>
+
+        <!-- ==================== LAB TAB ==================== -->
+        <div id="tab-lab" class="tab-content active">
+
+          <h2 style="margin-bottom: 8px;">Lab 07 &mdash; Manage Azure Storage</h2>
+          <p style="color: var(--text-muted); margin-bottom: 32px;">Estimated time: 50 minutes</p>
+
+          <!-- Task 1 -->
+          <div class="task-block">
+            <div class="task-header">
+              <input type="checkbox" class="completion-check" data-task="t1">
+              <span class="task-number">1</span>
+              <h3>Create and Configure a Storage Account</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Create a storage account with geo-redundant storage, configure network access, and set up lifecycle management.</p>
+
+              <ol class="steps">
+                <li>Navigate to <strong>Storage accounts</strong> and click <strong>+ Create</strong>.</li>
+                <li>Configure the basics:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Resource Group</td><td>az104-rg7 (create new)</td></tr>
+                    <tr><td>Storage account name</td><td>storageaccount<em>[unique]</em></td></tr>
+                    <tr><td>Region</td><td>East US</td></tr>
+                    <tr><td>Performance</td><td>Standard</td></tr>
+                    <tr><td>Redundancy</td><td>Geo-redundant storage (GRS)</td></tr>
+                  </table>
+                </li>
+                <li>On the <strong>Data protection</strong> tab, check <strong>Enable read access to data in the event of regional unavailability</strong> (RA-GRS).</li>
+                <li>Click <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+                <li>Once deployed, go to the storage account. Under <strong>Networking</strong>, set <strong>Public network access</strong> to <strong>Disabled</strong>. Click <strong>Save</strong>.</li>
+                <li>Change <strong>Public network access</strong> to <strong>Enabled from selected virtual networks and IP addresses</strong>.</li>
+                <li>Under <strong>Firewall</strong>, check <strong>Add your client IP address</strong> and click <strong>Save</strong>.</li>
+                <li>Navigate to <strong>Lifecycle management</strong> under <strong>Data management</strong>.</li>
+                <li>Add a rule:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Rule name</td><td>MoveToCool</td></tr>
+                    <tr><td>Rule scope</td><td>Apply rule to all blobs</td></tr>
+                    <tr><td>Blob type</td><td>Block blobs</td></tr>
+                    <tr><td>Condition</td><td>If last modified more than 30 days ago</td></tr>
+                    <tr><td>Action</td><td>Move to cool storage</td></tr>
+                  </table>
+                </li>
+                <li>Click <strong>Add</strong> to save the lifecycle rule.</li>
+              </ol>
+
+              <div class="info-box note">
+                <strong>Note</strong>
+                Lifecycle management rules run once per day. Moving blobs to cool storage reduces costs for infrequently accessed data while keeping it immediately available.
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 2 -->
+          <div class="task-block">
+            <div class="task-header">
+              <input type="checkbox" class="completion-check" data-task="t2">
+              <span class="task-number">2</span>
+              <h3>Create and Configure Secure Blob Storage</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Create a blob container with private access, add an immutable storage policy, upload a blob, and test access with SAS tokens.</p>
+
+              <ol class="steps">
+                <li>In your storage account, navigate to <strong>Containers</strong> and click <strong>+ Container</strong>.</li>
+                <li>Create a container:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Name</td><td>data</td></tr>
+                    <tr><td>Public access level</td><td>Private (no anonymous access)</td></tr>
+                  </table>
+                </li>
+                <li>Select the <strong>data</strong> container. Under <strong>Access policy</strong>, add an <strong>immutable storage policy</strong>:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Policy type</td><td>Time-based retention</td></tr>
+                    <tr><td>Retention period</td><td>180 days</td></tr>
+                  </table>
+                </li>
+                <li>Click <strong>Upload</strong>. In the <strong>Advanced</strong> section:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Upload to folder</td><td>securitytest</td></tr>
+                    <tr><td>Blob type</td><td>Block blob</td></tr>
+                    <tr><td>Access tier</td><td>Hot</td></tr>
+                  </table>
+                </li>
+                <li>Select the uploaded blob and copy the <strong>URL</strong>.</li>
+                <li><strong>Test:</strong> Open an InPrivate/Incognito browser window and paste the URL. You should receive a <strong>ResourceNotFound</strong> or <strong>AuthenticationFailed</strong> error because the container is private.</li>
+                <li>Go back to the blob and click <strong>Generate SAS</strong>:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Permissions</td><td>Read</td></tr>
+                    <tr><td>Start date/time</td><td>Yesterday</td></tr>
+                    <tr><td>Expiry date/time</td><td>Tomorrow (+2 days from start)</td></tr>
+                  </table>
+                </li>
+                <li>Click <strong>Generate SAS token and URL</strong>. Copy the <strong>Blob SAS URL</strong>.</li>
+                <li><strong>Test:</strong> Paste the SAS URL in the InPrivate browser. The blob should download or display successfully.</li>
+              </ol>
+
+              <div class="info-box tip">
+                <strong>Tip</strong>
+                SAS tokens provide delegated, time-limited access to storage resources without sharing account keys. Always use the shortest practical expiry window.
+              </div>
+            </div>
+          </div>
+
+          <!-- Task 3 -->
+          <div class="task-block">
+            <div class="task-header">
+              <input type="checkbox" class="completion-check" data-task="t3">
+              <span class="task-number">3</span>
+              <h3>Create and Configure Azure File Storage</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Create a file share, restrict access to a virtual network using service endpoints, and verify access control.</p>
+
+              <ol class="steps">
+                <li>In your storage account, navigate to <strong>File shares</strong> and click <strong>+ File share</strong>.</li>
+                <li>Create the file share:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Name</td><td>share1</td></tr>
+                    <tr><td>Tier</td><td>Transaction optimized</td></tr>
+                  </table>
+                </li>
+                <li>Open the <strong>Storage Browser</strong> and navigate to <strong>File shares &gt; share1</strong>.</li>
+                <li>Click <strong>Upload</strong> and upload a test file.</li>
+                <li>Navigate to <strong>Virtual networks</strong> and create a new VNet:
+                  <table class="config-table">
+                    <tr><th>Setting</th><th>Value</th></tr>
+                    <tr><td>Name</td><td>vnet1</td></tr>
+                    <tr><td>Resource Group</td><td>az104-rg7</td></tr>
+                    <tr><td>Region</td><td>East US</td></tr>
+                    <tr><td>Address space</td><td>10.0.0.0/16</td></tr>
+                    <tr><td>Subnet name</td><td>default</td></tr>
+                    <tr><td>Subnet range</td><td>10.0.0.0/24</td></tr>
+                  </table>
+                </li>
+                <li>On the subnet, enable the <strong>Microsoft.Storage</strong> service endpoint.</li>
+                <li>Return to the storage account <strong>Networking</strong> settings.</li>
+                <li>Under <strong>Virtual networks</strong>, click <strong>+ Add existing virtual network</strong> and select <strong>vnet1/default</strong>.</li>
+                <li>Under <strong>Firewall</strong>, remove your client IP address. Click <strong>Save</strong>.</li>
+                <li><strong>Test:</strong> Open the <strong>Storage Browser</strong> and try to access <strong>share1</strong>. You should see a <strong>not authorized</strong> error, confirming that access is now restricted to the VNet only.</li>
+              </ol>
+
+              <div class="info-box warning">
+                <strong>Warning</strong>
+                After removing your client IP and restricting to VNet only, you will lose portal access to the storage account data. Re-add your IP to the firewall if you need to continue managing the account from the portal.
+              </div>
+            </div>
+          </div>
+
+          <!-- Key Takeaways -->
+          <div class="takeaways">
+            <h3>Key Takeaways</h3>
+            <ul>
+              <li>Storage accounts contain blobs, files, queues, and tables &mdash; all under a single account namespace.</li>
+              <li>Redundancy options include LRS (3 copies, one datacenter), ZRS (3 zones), GRS (6 copies, two regions), and RA-GRS (read access to secondary).</li>
+              <li>Immutable storage provides WORM (Write Once, Read Many) capabilities for regulatory compliance.</li>
+              <li>SAS tokens provide time-limited, scoped access to storage resources without exposing account keys.</li>
+              <li>Service endpoints restrict storage account access to traffic originating from specified virtual networks.</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <!-- ==================== DEMO TAB ==================== -->
+        <div id="tab-demo" class="tab-content">
+
+          <h2 style="margin-bottom: 32px;">Demonstrations</h2>
+
+          <div class="task-block">
+            <div class="task-header">
+              <span class="task-number">1</span>
+              <h3>Storage Account Creation and Naming</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Walk through creating a storage account and explain the naming requirements:</p>
+              <ol class="steps">
+                <li>Storage account names must be <strong>globally unique</strong>, 3&ndash;24 characters, lowercase letters and numbers only.</li>
+                <li>Show the performance tier options: <strong>Standard</strong> (HDD-backed, general purpose) vs. <strong>Premium</strong> (SSD-backed, low latency).</li>
+                <li>Demonstrate the redundancy selector and explain the differences between LRS, ZRS, GRS, RA-GRS, GZRS, and RA-GZRS.</li>
+                <li>Review the <strong>Advanced</strong> tab: secure transfer, minimum TLS version, hierarchical namespace (Data Lake).</li>
+              </ol>
+              <div class="info-box note">
+                <strong>Note</strong>
+                The storage account name becomes part of the endpoint URL (e.g., <strong>mystorageaccount.blob.core.windows.net</strong>), which is why it must be globally unique.
+              </div>
+            </div>
+          </div>
+
+          <div class="task-block">
+            <div class="task-header">
+              <span class="task-number">2</span>
+              <h3>Blob Containers, Uploads, and SAS Tokens</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Demonstrate blob container management and secure access:</p>
+              <ol class="steps">
+                <li>Create a blob container and show the three access levels: Private, Blob (anonymous read for blobs), Container (anonymous read for container and blobs).</li>
+                <li>Upload a file and show the blob properties: access tier, size, content type, URL.</li>
+                <li>Generate a SAS token at the blob level. Walk through each parameter: permissions, start/expiry, allowed protocols, IP restrictions.</li>
+                <li>Show the difference between a <strong>service SAS</strong> (scoped to one service), <strong>account SAS</strong> (scoped to the account), and <strong>user delegation SAS</strong> (backed by Entra ID).</li>
+                <li>Test the SAS URL in a browser to confirm access.</li>
+              </ol>
+              <div class="info-box tip">
+                <strong>Tip</strong>
+                User delegation SAS is the most secure option because it uses Entra ID credentials and does not require sharing account keys.
+              </div>
+            </div>
+          </div>
+
+          <div class="task-block">
+            <div class="task-header">
+              <span class="task-number">3</span>
+              <h3>File Shares, Snapshots, and Directories</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Demonstrate Azure Files capabilities:</p>
+              <ol class="steps">
+                <li>Create a file share and explain the tier options: Hot, Transaction optimized, Cool, Premium.</li>
+                <li>Create directories and upload files within the share.</li>
+                <li>Take a <strong>snapshot</strong> of the file share and explain how snapshots are incremental and read-only.</li>
+                <li>Show the <strong>Connect</strong> button and walk through the mount script for Windows (SMB), Linux, and macOS.</li>
+                <li>Demonstrate restoring a file from a snapshot.</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="task-block">
+            <div class="task-header">
+              <span class="task-number">4</span>
+              <h3>Storage Explorer and AzCopy</h3>
+              <span class="task-toggle">&#9660;</span>
+            </div>
+            <div class="task-body">
+              <p>Demonstrate tools for managing and moving storage data:</p>
+              <ol class="steps">
+                <li>Open <strong>Storage Browser</strong> in the portal and navigate through blobs, file shares, queues, and tables.</li>
+                <li>Show the standalone <strong>Azure Storage Explorer</strong> desktop app and how to connect with Entra ID or SAS tokens.</li>
+                <li>Demonstrate <strong>AzCopy</strong> for command-line data movement:
+                  <div class="code-block">
+                    <span class="lang-tag">CLI</span>
+                    azcopy login
+azcopy copy "localfile.txt" "https://&lt;account&gt;.blob.core.windows.net/&lt;container&gt;/localfile.txt"
+                  </div>
+                </li>
+                <li>Show how to copy blobs between storage accounts:
+                  <div class="code-block">
+                    <span class="lang-tag">CLI</span>
+                    azcopy copy "https://source.blob.core.windows.net/data/*" "https://dest.blob.core.windows.net/data/" --recursive
+                  </div>
+                </li>
+                <li>Explain when to use AzCopy vs. Storage Explorer vs. Azure Data Box for large migrations.</li>
+              </ol>
+              <div class="info-box tip">
+                <strong>Tip</strong>
+                AzCopy is optimized for high-throughput transfers and supports parallel uploads, resume on failure, and sync operations.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ==================== EXERCISES TAB ==================== -->
+        <div id="tab-exercises" class="tab-content">
+
+          <h2 style="margin-bottom: 32px;">Exercises</h2>
+
+          <!-- Exercise 1 -->
+          <div class="exercise-card">
+            <span class="difficulty easy">Easy</span>
+            <h4>Exercise 1: Storage Redundancy Comparison</h4>
+            <ol>
+              <li>Create a storage account and review the <strong>Redundancy</strong> blade.</li>
+              <li>Compare LRS, ZRS, GRS, RA-GRS, GZRS, and RA-GZRS options.</li>
+              <li>For each, note: number of copies, geographic spread, and read access during an outage.</li>
+              <li>Which would you choose for a mission-critical database backup? Why?</li>
+            </ol>
+            <div class="hint">
+              <strong>Show Hint</strong>
+              <div class="hint-text">RA-GRS provides 6 copies across two regions with read access to the secondary region during outages. This gives the best durability and availability for critical backups. LRS has 3 copies in one datacenter, ZRS has 3 copies across zones, GRS has 6 copies across regions but no secondary read access.</div>
+            </div>
+          </div>
+
+          <!-- Exercise 2 -->
+          <div class="exercise-card">
+            <span class="difficulty medium">Medium</span>
+            <h4>Exercise 2: Blob Lifecycle Management</h4>
+            <ol>
+              <li>Create a storage account with a blob container.</li>
+              <li>Upload several test files.</li>
+              <li>Configure a lifecycle management rule: move to Cool tier after 30 days, Archive after 90 days, delete after 365 days.</li>
+              <li>Review the rule JSON in the portal.</li>
+              <li>Explain: What happens to archived blobs? How do you access them?</li>
+            </ol>
+            <div class="hint">
+              <strong>Show Hint</strong>
+              <div class="hint-text">Archived blobs are stored offline and cannot be read or modified directly. To access them, you must rehydrate them by changing the tier to Hot or Cool. Rehydration can take up to 15 hours with standard priority, or 1 hour with high priority (at higher cost).</div>
+            </div>
+          </div>
+
+          <!-- Exercise 3 -->
+          <div class="exercise-card">
+            <span class="difficulty hard">Hard</span>
+            <h4>Exercise 3: Secure Access Challenge</h4>
+            <ol>
+              <li>Create a storage account and upload a sensitive file.</li>
+              <li>Disable all public access.</li>
+              <li>Create a VNet with a service endpoint for <strong>Microsoft.Storage</strong>.</li>
+              <li>Configure the storage account firewall to allow only that VNet.</li>
+              <li>Generate a SAS token with: read-only, 1-hour expiry, HTTPS only, restricted to a specific IP.</li>
+              <li>Test access from allowed and disallowed sources.</li>
+              <li>Explain the difference between SAS tokens, access keys, and Entra ID authentication.</li>
+            </ol>
+            <div class="hint">
+              <strong>Show Hint</strong>
+              <div class="hint-text">Access keys give full, unrestricted control over the entire storage account &mdash; never share them. SAS tokens are delegated, time-limited, and scoped to specific permissions, services, and resources. Entra ID authentication uses RBAC roles (e.g., Storage Blob Data Reader) and is the most secure option because it does not require sharing secrets and supports conditional access policies.</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div><!-- /tab-container -->
+    </div><!-- /module-content -->
+
+  </div><!-- /module-page -->
+
+  <footer class="site-footer">
+    <p>Built for the AZ-104 Azure Administrator certification. Lab content sourced from <a href="https://microsoftlearning.github.io/AZ-104-MicrosoftAzureAdministrator/" target="_blank">Microsoft Learning</a>.</p>
+  </footer>
+
+  <script src="../js/app.js"></script>
+</body>
+</html>
